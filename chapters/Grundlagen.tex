@@ -1,6 +1,24 @@
 \chapter{Grundlagen}
 
-\section{Sektion 1}
+\section{Cloud Computing}
+Laut der Definition des National Institute of Standards and Technology (NIST), ist Cloud Computing ein Modell, dass einen einfachen on-demand Zugriff auf eine Menge von EDV Ressourcen ermöglicht, welche schnell und ohne Interaktion eines Service Providers bereitgestellt oder freigegeben werden können\cite{mell_nist_2011}.
+Cloud Computing zeichnet sich demnach durch fünf Charakteristiken aus. Diese sind die bedarfsorientierte Bereitstellung von Ressourcen die durch einen Systembenutzer ausgelöst wird, den einfachen Zugriff über heterogene Plattformen hinweg durch standardisierte Netzwerkmechanismen, das Pooling von Servern und die schnelle und automatisierte Skalierung, scheinbar unendlich verfügbare Ressourcen und das dauerhafte Messen der Service Aktivitäten. \\
+Darüber hinaus gehen aus der Definition verschiedene Servicemodelle hervor, die alle den Suffix "`as a service"', also "`als Dienstleistung"', gemeinsam haben. In der Definition des NIST werden die grundlegenden Servicemodelle IaaS, PaaS und SaaS genannt. Im weiterführenden ClouNS Referenz Modell\cite{kratzke_clouns_2016} werden sie um CaaS erweitert. \\
+
+\subsection{Infrastructure as a Service (IaaS)}
+Infrastructure as a Service bietet die Grundlage des Cloud Native Stacks. Einem Kunden werden hierbei grundlegende zumeist virtualisierte Hardware-Ressourcen wie Prozessorleistung, Speicher oder Netzwerkmöglichkeiten angeboten. Auf diesen kann er seine Software beliebig ausführen. Er hat dabei keinen Einfluss auf die zugrundeliegende Cloud Infrastruktur (also die Server-Pools an sich), aber kann Betriebssysteme, Anwendungen und verwendeten Speicher kontrollieren\cite{mell_nist_2011}. \\
+
+\subsection{Cluster as a Service (CaaS)}
+Bei Cluster as a Service handelt es sich um eine Schicht über IaaS, die ein Clustering von Containern bietet. Hier agieren Orchestrierungs Tools wie zum Beispiel Kubernetes, die Container auf das Cluster verteilen, skalieren und managen\cite{kratzke_clouns_2016}. \\
+
+\subsection{Platform as a Service (PaaS)}
+Eine höhere Abstraktionsebene über IaaS oder CaaS. Einem Kunden wird auch hier die Kontrolle über die in der Cloud Infrastruktur auszuführende Anwendung gegeben. Allerdings kann er nicht über verwendete Betriebssysteme, Speichernutzung, Netzwerkkonfiguration usw. entscheiden. Dafür werden ihm vom Anbieter Programmier- oder Laufzeitumgebungen, Tools und Bibliotheken angeboten, die die Entwicklung und Ausführung der Anwendung auf der Infrastruktur ermöglichen\cite{mell_nist_2011}.\\
+
+\subsection{Software as a Service (SaaS)}
+Eine höhere Abstraktionsebene über PaaS. Einem Kunden werden hier vom Anbieter explizite auf Cloud Infrastruktur auszuführende Anwendungen bereitgestellt, die dieser verwenden kann. Der Kunde hat weder Einfluss auf die zugrundeliegende Cloud Infrastruktur, noch auf verwendete Betriebssysteme oder Software. Die Ausnahme bilden limitierte Einstellungsmöglichkeiten der vom Anbieter bereitgestellten Anwendung\cite{mell_nist_2011}.
+
+\section{Cloud Native Computing}
+Cloud Native Technologien oder Cloud Native Computing ist laut der Cloud Native Computing Foundation (CNCF) eine Ansammlung von Technologien, die es Unternehmen ermöglichen "`skalierbare Anwendungen in modernen, dynamischen Umgebungen zu implementieren und zu betreiben"' \cite{noauthor_cncftoc_nodate}. Bei diesen dynamischen Umgebungen handelt es sich dabei ausschließlich um Cloud Umgebungen (also private, öffentliche und hybride Clouds). Diese Systeme sollen lose gekoppelt, "`belastbar, handhabbar und beobachtbar"' sein und durch Automatisierung schnelle Änderungen ermöglichen\cite{noauthor_cncftoc_nodate}.
 
 \section{Sektion 2}
 
