@@ -47,7 +47,7 @@
 %*************************************************************************
 % Bibliographies
 %*************************************************************************
-\addbibresource{bibliography.bib}
+%\addbibresource{bibliography.bib}
 \addbibresource{zotero.bib}
 
 %*************************************************************************
@@ -74,15 +74,20 @@
 %\cleardoublepage\include{frontbackmatter/Dedication}
 %\cleardoublepage\include{frontbackmatter/Foreword}
 \cleardoublepage\include{frontbackmatter/Declaration}
-\cleardoublepage\include{frontbackmatter/AbstractEN}
+%\cleardoublepage\include{frontbackmatter/AbstractEN}
 \cleardoublepage\include{frontbackmatter/AbstractDE}
 %\cleardoublepage\include{frontbackmatter/Publications}
 %\cleardoublepage\include{frontbackmatter/Acknowledgments}
 \cleardoublepage\include{frontbackmatter/Contents}
-\cleardoublepage\include{frontbackmatter/Figures}
-\cleardoublepage\include{frontbackmatter/Tables}
-\cleardoublepage\include{frontbackmatter/Listings}
-\cleardoublepage\include{frontbackmatter/Acronyms}
+%\cleardoublepage\include{frontbackmatter/Figures}
+%\cleardoublepage\include{frontbackmatter/Tables}
+%\cleardoublepage\include{frontbackmatter/Listings}
+%\cleardoublepage\include{frontbackmatter/Acronyms}
+
+% uncomment both lines if Acronyms (or maybe something else) are enabled
+\automark[section]{chapter}
+\cleardoublepage
+
 %*************************************************************************
 % Mainmatter
 %*************************************************************************
@@ -91,19 +96,29 @@
 \pagenumbering{arabic}
 % Alwas use \cleardoublepage before \part{...}.
 \cleardoublepage
-\part{Thesis}\label{pt:thesis}
-\include{chapters/examples/chapter01}
-\include{chapters/examples/chapter02}
-\include{chapters/examples/chapter03}
+
+% uncomment this if there is more than 1 part
+%\part{Thesis}\label{pt:thesis}
+
+% include all chapters after this comment
+\include{chapters/Einleitung}
+
 %*************************************************************************
 % Backmatter
 %*************************************************************************
-\appendix
+
+% uncomment all following lines except the second for Appendix part
+% do not forget to uncomment the Part 1 as well
+
+%\appendix
 %\renewcommand{\thechapter}{\alph{chapter}}
-\cleardoublepage
-\part{Appendix}
-\include{chapters/examples/appendix01}
-\include{chapters/examples/appendix02}
+%\cleardoublepage
+%\part{Appendix}
+
+% include all appendix chapters after this comment
+%\include{chapters/examples/appendix01}
+%\include{chapters/examples/appendix02}
+
 %*************************************************************************
 % Other Stuff in the Back
 %*************************************************************************
