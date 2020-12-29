@@ -2,7 +2,12 @@
 In diesem Kapitel werde ich die Motivation und das Ziel meiner Arbeit erklären und auf die Gliederung eingehen.
 
 \section{Motivation}
+Die Nutzung von Services der Public Cloud Anbieter wie Amazon AWS, Microsoft Azure oder Google Cloud Platform ermöglichen es Organisationen, ihre Anwendungen immer schneller, einfacher und kostengünstiger aufzusetzen und zu betreiben. Schon ein einfaches lift-and-shift von lokalen Rechenzentren hin zu virtuell bereitgestellten Instanzen bedeutet einige Vorteile in puncto Agilität, Kosteneinsparungen und Ausfallsicherheit. Durch Containerisierung und Orchestrierungs-Tools wie Kubernetes wurde es möglich, Anwendungen leichter zu skalieren und noch ausfallsicherer zu machen. Doch die von den Anbietern bereitgestellten Services werden immer raffinierter, um das Betreiben von Software noch weiter zu verbessern. Während beim Betrieb von containerisierten Anwendungen noch gewisse Parameter konfiguriert werden müssen, wird bei Serverless aufgestellten Anwendungen der Server an sich weg abstrahiert. Somit muss sich der Programmierer nicht einmal mehr um die Konfiguration eines Servers kümmern, sondern nur seinen Code schreiben, der dann automatisch von einem Server des Cloud Anbieters ausgeführt wird, wenn er soll und nur wenn er soll. Dies verspricht eine theoretisch unendliche Skalierbarkeit, noch einfacheres Deployment und weitere Kosteneinsparungen. Jedoch ist bisher unklar, wie sich die Nutzung von Serverless Anwendungen im Vergleich zu containerisierten Anwendungen verhält. 
 
 \section{Zielsetzung}
+Ziel der Arbeit ist es, die Performance von containerisierten und Serverless Anwendungen zu vergleichen.
+
+Dazu soll eine Beispielanwendung in beiden Prinzipien entwickelt werden und einem Lasttest unterzogen werden. Des Weiteren werden Optimierungsmöglichkeiten evaluiert beider Technologien betrachtet und ebenfalls evaluiert.
 
 \section{Gliederung}
+Zunächst wird auf die Grundlagen von Serverless und Containerisierung eingegangen. Als nächstes soll ein Konzept erstellt werden, mit dem die beiden Technologien evaluiert werden können. Schließlich wird die Evaluation praktisch durchgeführt und die Ergebnisse präsentiert.
