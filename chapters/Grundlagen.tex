@@ -3,7 +3,13 @@
 \section{Cloud Computing}
 Laut der Definition des National Institute of Standards and Technology (NIST), ist Cloud Computing ein Modell, dass einen einfachen on-demand Zugriff auf eine Menge von EDV Ressourcen ermöglicht, welche schnell und ohne Interaktion eines Service Providers bereitgestellt oder freigegeben werden können\cite{mell_nist_2011}.
 Cloud Computing zeichnet sich demnach durch fünf Charakteristiken aus. Diese sind die bedarfsorientierte Bereitstellung von Ressourcen die durch einen Systembenutzer ausgelöst wird, den einfachen Zugriff über heterogene Plattformen hinweg durch standardisierte Netzwerkmechanismen, das Pooling von Servern und die schnelle und automatisierte Skalierung, scheinbar unendlich verfügbare Ressourcen und das dauerhafte Messen der Service Aktivitäten. \\
-Darüber hinaus gehen aus der Definition verschiedene Servicemodelle hervor, die alle den Suffix "`as a service"', also "`als Dienstleistung"', gemeinsam haben. In der Definition des NIST werden die grundlegenden Servicemodelle IaaS, PaaS und SaaS genannt. Im weiterführenden ClouNS Referenz Modell\cite{kratzke_clouns_2016} werden sie um CaaS erweitert. \\
+Darüber hinaus gehen aus der Definition verschiedene Servicemodelle hervor, die alle den Suffix "`as a service"', also "`als Dienstleistung"', gemeinsam haben. In der Definition des NIST werden die grundlegenden Servicemodelle IaaS, PaaS und SaaS genannt. Im weiterführenden ClouNS Referenz Modell\cite{kratzke_clouns_2016}, das in Abbildung \ref{fig:clouNS} zu sehen ist, werden sie um CaaS erweitert. \\
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/ClouNS_Stack.png}
+    \caption[Der ClouNS Stack]{Der ClouNS Stack\cite{kratzke_clouns_2016}}
+    \label{fig:clouNS}
+\end{figure}
 
 \subsection{Infrastructure as a Service (IaaS)}
 Infrastructure as a Service bietet die Grundlage des Cloud Native Stacks. Einem Kunden werden hierbei grundlegende zumeist virtualisierte Hardware-Ressourcen wie Prozessorleistung, Speicher oder Netzwerkmöglichkeiten angeboten. Auf diesen kann er seine Software beliebig ausführen. Er hat dabei keinen Einfluss auf die zugrundeliegende Cloud Infrastruktur (also die Server-Pools an sich), aber kann Betriebssysteme, Anwendungen und verwendeten Speicher kontrollieren\cite{mell_nist_2011}. \\
@@ -20,6 +26,17 @@ Eine höhere Abstraktionsebene über PaaS. Einem Kunden werden hier vom Anbieter
 \section{Cloud Native Computing}
 Cloud Native Technologien oder Cloud Native Computing ist laut der Cloud Native Computing Foundation (CNCF) eine Ansammlung von Technologien, die es Unternehmen ermöglichen "`skalierbare Anwendungen in modernen, dynamischen Umgebungen zu implementieren und zu betreiben"' \cite{noauthor_cncftoc_nodate}. Bei diesen dynamischen Umgebungen handelt es sich dabei ausschließlich um Cloud Umgebungen (also private, öffentliche und hybride Clouds). Diese Systeme sollen lose gekoppelt, "`belastbar, handhabbar und beobachtbar"' sein und durch Automatisierung schnelle Änderungen ermöglichen\cite{noauthor_cncftoc_nodate}.
 
-\section{Sektion 2}
+\section{Containerisierung}
+Containerisierung ist eine Technik, den Code einer Anwendung mitsamt aller Abhängigkeiten, die diese zur Ausführung benötigt, zu verpacken. Ein solches Paket wird als Container Image bezeichnet. Da alle Abhängigkeiten enthalten sind, werden dadurch die Laufzeitunterschiede auf unterschiedlichen Plattformen minimiert\cite{noauthor_what_nodate}. Zur Laufzeit wird ein Container Image als Container bezeichnet. Um ein Container Image auszuführen, wird eine Container Runtime benötigt. Die erste Container Runtime Engine wurde von Docker entwickelt, wird aber mittlerweile als Open-Source Projekt mit dem Namen containerd von der Open Container Initiative (OCI) betrieben\cite{noauthor_what_nodate}. 
+
+Containerisierte Anwendungen unterscheiden sich von Virtuellen Maschinen vor allem darin, dass kein Hypervisor zur Ausführung der Images benötigt wird. Stattdessen teilen sich alle Container das Host-Betriebssystem und werden in einem eigenen User-Space isoliert. Dadurch können Container-Images deutlich leichtgewichtiger und schneller als Virtuelle Maschinen ausgeführt werden. Abbildung \ref{fig:containerVsVMs} verdeutlicht nochmals den Unterschied beider Technologien.
+
+\begin{figure}[H]
+    \includegraphics[width=200pt]{img/container-architecture.png}
+    \includegraphics[width=200pt]{img/vm-architecture.png}
+    
+    \caption[Vergleich zwischen Containern und Virtuellen Maschinen]{Vergleich zwischen Containern und Virtuellen Maschinen\cite{noauthor_what_nodate}}
+    \label{fig:containerVsVMs}
+\end{figure}
 
 \section{Sektion 3}
