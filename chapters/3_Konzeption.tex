@@ -1,4 +1,42 @@
 \chapter{Konzeption}
 In diesem Kapitel werde ich die grundlegende Konzeption der Arbeit vorstellen.
 
-\section{Konzeption der Beispielanwendung}
+\section{Methodisches Vorgehen}
+Es soll eine Beispielanwendung sowohl Containerisiert als auch Serverless entwickelt werden. Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und die Ergebnisse miteinander verglichen.
+
+\section{AWS Lambda}
+Die Serverless Anwendung soll auf AWS Lambda ausgeführt werden. Dabei handelt es sich um ein Function-as-a-service Angebot von Amazon AWS.
+
+\subsection{Funktionsweise}
+Die Funktionsweise von Lambda lässt sich wie folgt beschreiben\cite{amazon_aws_aws_2020}:
+
+\begin{enumerate}
+\item Es tritt ein Event ein, dass die Ausführung der Lambda-Funktion anfordert. \\
+    Dabei kann es sich um alle mögliche Ereignisse handeln. Zum Beispiel ein Dateiupload in S3 (AWS Object Store), einen CRON-Job oder im Falle eines Web Backends eine API-Aufruf mittels AWS API-Gateway.
+
+\item Init Phase: Lambda erstellt automatisch eine Ausführungsumgebung (environment). \\
+    Dabei handelt es sich um eine isolierte Umgebung, die für die Ausführung der Lambda- Funktion benötigt wird. Für diese Umgebung lassen sich einige Parameter von Anwender konfigurieren:
+    
+    \begin{enumerate}
+        \item Die Runtime: Dabei handelt es sich um die verwendete Programmiersprache bzw. Framework. Als Optionen bietet Lambda beispielsweise Node.js 12.x, Java, Python oder Go.
+        \item Die Arbeitsspeichergröße: Wie viel Speicher der ausgeführten Funktion bereitsteht. Die Mindestgröße beträgt hier 128MB; maximal sind etwas mehr als 10GB möglich. Proportional zur Speichergröße bestimmt Lambda ebenfalls die CPU Leistung, mit der die Funktion ausgeführt wird.
+        \item Timeout: Die maximale Ausführungszeit der Funktion bevor Lambda sie automatisch beendet. Hier sind maximal 15 Minuten möglich.
+    \end{enumerate}
+    
+    Die Umgebung wird mit den konfigurierten Ressourcen (Speicher, CPU) erstellt, der Code der Funktion geladen und entpackt und der Initialisierungscode der Lambda Funktion (nicht die Funktion an sich) ausgeführt. Dort lässt sich bspw. eine Datenbankverbindung aufbauen.
+    
+\item Invoke Phase: In dieser Phase wird die eigentliche Lambda Funktion, welche auch als Handler bezeichnet wird, ausgeführt. Eventuelle Rückgabewerte werden an den Aufrufer zurückgeliefert. Nachdem der Handler ausgeführt wurde, bleibt er verfügbar für weitere Anfragen. Der Initialisierungscode wird allerdings nicht mehr ausgeführt.
+    
+\item Shutdown Phase: Nachdem die Funktion für einige Zeit nicht mehr angefragt wurde, wird die Ausführungsumgebung wieder freigegeben. 
+\end{enumerate}
+
+\subsection{Cold- und Warmstart}
+Nachdem der Handler in der Invoke-Phase ausgeführt wurde, wird die Ausführungsumgebung nicht sofort wieder freigegeben, sondern für einige Zeit vorgehalten, um weitere Anfragen schneller zu bearbeiten. Dies wird auch als Warmstart bezeichnet, da die Runtime-Umgebung bereits initialisiert ist und der Handler sofort aktiviert werden kann.
+Muss die Umgebung nach einer eingetroffenen Anfrage erst noch initialisiert werden, also erst die Init-Phase ausgeführt werden, wird dies als Coldstart bezeichnet. Aufgrund des Mehraufwandes, erweist sich ein Coldstart als deutlich langsamer als ein Warmstart.
+
+\subsection{Nebenläufigkeit}
+Befindet sich der Handler einer Lambda-Funktion gerade in der Ausführung und es trifft ein weiteres Ereignis ein, startet Lambda zusätzlich zu der bereits laufenden Funktion eine weitere Ausführungsumgebung, um diese neue Anfrage zu verarbeiten. Da nun mehrere Umgebungen gleichzeitig ausgeführt werden, wird dies auch als Nebenläufigkeit (engl. concurrency) bezeichnet. Bei vielen gleichzeitigen Anfragen werden also so viele Umgebungen wie nötig erstellt. Der AWS Lambda Service erlaubt standardmäßig 1000 nebenläufige Funktionen pro AWS Region, dieser Wert lässt sich allerdings nach Absprache mit AWS erhöhen.
+
+Durch die Nebenläufigkeit wird die Stärke von Lambda Funktionen bei der Skalierung deutlich. Gibt es einen Anfragesturm, werden automatisch neue Instanzen aufgesetzt, die diese Bearbeiten können. Bereits initialisierte Umgebungen werden wiederverwendet. Lässt die Anfrage nach, werden Umgebungen automatisch wieder heruntergefahren. 
+
+Allerdings muss für jede neue Umgebung ist ein Coldstart durchgeführt werden der viel Zeit kostet und sich dem Benutzer als deutliche Latenz bemerkbar macht. Und auch für die Ausführungskosten stellen Coldstarts ein Problem dar, denn Lambda-Funktionen werden nach der Ausführungszeit in Millisekunden abgerechnet. Darum gilt es, Coldstarts möglichst zu vermeiden. Beispielsweise lassen sich mit Provisioned Concurrency bereits Funktionen vor-starten, die dann bei Bedarf nicht mehr einen Kaltstart erfordern. Kombiniert mit Autoscaling, das die provisionierte Kapazität an steigende Anfragezahlen anpasst, lässt sich so die Anzahl an Kaltstarts vermindern.
