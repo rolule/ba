@@ -43,3 +43,24 @@ Allerdings muss für jede neue Umgebung ist ein Coldstart durchgeführt werden d
 
 \subsection{Kosten}
 Wie bereits erwähnt, wird die Ausführung von Lambda-Funktionen nach der Ausführungszeit in Millisekunden abgerechnet. Dabei zählt die Zeit eines Cold-Starts mit in die Berechnung ein. Bei der Berechnung zählt aber auch die konfigurierte Arbeitsspeichergröße mit in das Ergebnis ein. Derzeit berechnet AWS in der Region Frankfurt (eu-central-1) Kosten von 0,0000166667 US-Dollar pro GB-Sekunde\cite{noauthor_lambda_nodate}. Zusätzlich müssen pro 1.000.000 Ausführungen im Monat noch einmal 0,20 US-Dollar Anforderungsgebühren gezahlt werden.
+
+\section{Konzeption der Testanwendung}
+Als Testanwendung wird ein einfaches REST-Backend am Beispiel eines Webshops entwickelt, wie es in der Praxis häufig verwendet wird. Der Webshop stellt folgende Routen bereit:  
+
+\begin{enumerate}
+    \item GET /products: Das Auflisten aller verfügbarer Produkte
+    \item GET /products/\{id\}: Das Auflisten eines spezifischen Produktes mit der angegebenen id
+    \item POST /: Das Abschicken einer Bestellung
+\end{enumerate}
+
+Um die Anwendung möglichst einfach zu gestalten und Unterschiede zwischen den beiden Technologien zu minimieren, wird zunächst auf die Verwendung einer Datenbank verzichtet. Stattdessen werden Randomisierte Timeouts in allen Anfragen verwendet.
+Als Runtime wird in beiden Fällen Node.js 12 verwendet.
+
+\subsection{Serverless}
+Für die Entwicklung der Serverless-Anwendung wird das populäre (36.000 Github-Stars) Serverless-Framework\cite{noauthor_serverless_nodate} verwendet. Dabei handelt es sich um ein Open-Source Framework zur Entwicklung von Serverless Anwendungen. Es übernimmt die Erstellung von Anwendungs-Stacks, Rechteverteilung und Konfiguration bei allen gängigen Public-Cloud Anbietern wie AWS, Azure oder GCP. Da in dieser Arbeit AWS verwendet wird, erstellt Serverless automatisch einen Anwendungs-Stack mit AWS CloudFormation. Dabei wird ein AWS API-Gateway erstellt, das über die Routen der REST-Schnittstelle verfügt. Trifft eine Anfrage an eine der Routen ein, übernimmt das API-Gateway die Auslösung des passenden Events, wodurch die korrekte Lambda-Funktion mit den vom Benutzer übergebenen Parametern aufgerufen wird. 
+
+Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Denn auch wenn man sich nicht mehr um Server kümmern muss, ist dennoch die Konfiguration des API-Gateways notwendig.
+
+\subsubsection{Container}
+Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
+Die Ausführung der Anwendung erfolgt entweder auf der AWS Elastic Container Service (ECS) Plattform oder mit dem AWS Elastic Kubernetes Service (EKS). Möglicherweise wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren.
