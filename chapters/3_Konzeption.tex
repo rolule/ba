@@ -61,6 +61,6 @@ Für die Entwicklung der Serverless-Anwendung wird das populäre (36.000 Github-
 
 Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Denn auch wenn man sich nicht mehr um Server kümmern muss, ist dennoch die Konfiguration des API-Gateways notwendig.
 
-\subsubsection{Container}
+\subsection{Container}
 Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
 Die Ausführung der Anwendung erfolgt entweder auf der AWS Elastic Container Service (ECS) Plattform oder mit dem AWS Elastic Kubernetes Service (EKS). Möglicherweise wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren.
