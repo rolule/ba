@@ -42,7 +42,7 @@ const notes = [
 const app = express();
 app.use(bodyParser.json());
 
-const port = 3000;
+const port = 80;
 
 // get all notes
 app.get("/notes", async (req, res) => {
