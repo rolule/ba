@@ -97,18 +97,13 @@ Das Tool erlaubt in der kostenlosen Version maximal 50 gleichzeitige virtuelle B
 \subsection{Test Szenarien}
 Die folgenden Test Szenarien werden für die Analyse durchgeführt
 \begin{itemize}
-    \item Szenario A: Einzelne Notiz abrufen \\ 
-        Erst alle Notizen und dann eine einzelnen Notiz abrufen \\
-        1. GET /notes   -> 2s    \\
-        2. GET /notes/1 -> 2s    \\
-        
-    \item Szenario B: Notiz bearbeiten \\
+    \item Szenario A: Notiz bearbeiten \\
         Erst alle Notizen, dann eine einzelne Notiz abrufen und bearbeiten \\
         1. GET /notes -> 2s     \\
         2. GET /notes/1 -> 5s   \\
         3. PUT /notes/1         \\
         
-    \item Szenario C: Notiz falsch erstellt \\
+    \item Szenario B: Notiz falsch erstellt \\
     Der Benutzer ruft alle Notizen ab. Er entscheidet sich eine Notiz erstellen. Er ruft die erstellte Notiz ab und bemerkt dass er einen Fehler gemacht hat. Er bearbeitet die Notiz und speichert die Notiz erneut ab. \\
         1. GET /notes   -> 10s  \\
         2. POST /notes  -> 3s   \\
