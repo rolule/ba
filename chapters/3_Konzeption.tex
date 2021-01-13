@@ -45,15 +45,16 @@ Allerdings muss für jede neue Umgebung ist ein Coldstart durchgeführt werden d
 Wie bereits erwähnt, wird die Ausführung von Lambda-Funktionen nach der Ausführungszeit in Millisekunden abgerechnet. Dabei zählt die Zeit eines Cold-Starts mit in die Berechnung ein. Bei der Berechnung zählt aber auch die konfigurierte Arbeitsspeichergröße mit in das Ergebnis ein. Derzeit berechnet AWS in der Region Frankfurt (eu-central-1) Kosten von 0,0000166667 US-Dollar pro GB-Sekunde\cite{noauthor_lambda_nodate}. Zusätzlich müssen pro 1.000.000 Ausführungen im Monat noch einmal 0,20 US-Dollar Anforderungsgebühren gezahlt werden.
 
 \section{Konzeption der Testanwendung}
-Als Testanwendung wird ein einfaches REST-Backend am Beispiel eines Webshops entwickelt, wie es in der Praxis häufig verwendet wird. Der Webshop stellt folgende Routen bereit:  
+Als Testanwendung wird ein einfaches REST-Backend am Beispiel eines Notiz-Applikation entwickelt, wie es in der Praxis häufig verwendet wird. Der Service stellt folgende Routen bereit:  
 
 \begin{enumerate}
-    \item GET /products: Das Auflisten aller verfügbarer Produkte
-    \item GET /products/\{id\}: Das Auflisten eines spezifischen Produktes mit der angegebenen id
-    \item POST /: Das Abschicken einer Bestellung
+    \item GET /notes: Das Auflisten aller verfügbarer Notizen
+    \item GET /notes/\{id\}: Das Auflisten eines spezifischen Notiz mit der angegebenen id
+    \item PUT /notes/\{id\}: Das Ändern einer spezifischen Notiz mit der angegebenen id
+    \item POST /: Das Erstellen einer Notiz
 \end{enumerate}
 
-Um die Anwendung möglichst einfach zu gestalten und Unterschiede zwischen den beiden Technologien zu minimieren, wird zunächst auf die Verwendung einer Datenbank verzichtet. Stattdessen werden Randomisierte Timeouts in allen Anfragen verwendet.
+Um die Anwendung möglichst einfach zu gestalten und Unterschiede zwischen den beiden Technologien zu minimieren, wird zunächst auf die Verwendung einer Datenbank verzichtet. Stattdessen werden randomisierte Timeouts in allen Anfragen verwendet.
 Als Runtime wird in beiden Fällen Node.js 12 verwendet.
 
 \subsection{Serverless}
@@ -63,4 +64,54 @@ Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. 
 
 \subsection{Container}
 Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
-Die Ausführung der Anwendung erfolgt entweder auf der AWS Elastic Container Service (ECS) Plattform oder mit dem AWS Elastic Kubernetes Service (EKS). Möglicherweise wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren.
+Die Ausführung der Anwendung erfolgt auf der AWS Elastic Container Service (ECS) Plattform, einem von AWS bereitgestelltem Orchestrations-Tool. Es wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren. Des Weiteren wird ein Load Balancer verwendet, um die eingehenden Requests auf die verschiedenen Container zu verteilen. 
+
+\section{Konzeption der Tests}
+
+\subsection{Testing Tool}
+Um die Performance der eben vorgestellten Anwendungen zu testen, wird die Performance-Testing Plattform k6 Cloud\cite{noauthor_load_nodate} verwendet. Dabei handelt es sich um ein cloudbasiertes Tool, mit der sich virtuelle Benutzer zum Testen einer Anwendung erstellen lassen. Die Benutzer arbeiten dann parallel vordefinierte Test-Szenarien ab, bei denen verschiedene Requests an die REST-APIs der Services geschickt werden. Das Tool speichert dabei für jeden Request an einen bestimmten API-Endpunkt Werte unter anderem folgender Metriken: 
+
+\begin{enumerate}
+    \item VUS (virtual users): Die aggregierte Anzahl der virtuellen Benutzer zum aktuellen Zeitpunkt 
+    
+    \item Response Time: Die Zeit vom Abschicken eines Requests bis zum Erhalt der Antwort in Millisekunden (ms). Dabei wird Aufwand für eventuelle DNS Lookups nicht mit einberechnet.
+    
+    \item HTTP-Statuscodes: Geben den Status eines HTTP-Requests an. Wichtig für die Betrachtung sind vor allem die Codes:
+        \begin{enumerate}
+            \item 200 (OK): Der Request war erfolgreich.
+            \item 503 (Service Unavailable): Der Server kann den Request nicht bearbeiten. Kann auftreten, wenn zu viele Requests bei einem Service eintreffen und dieser aufgrund mangelnder verfügbarer Ressourcen (CPU / Speicher) nicht in der Lage ist, die Anfrage zu bearbeiten.
+        \end{enumerate}
+        
+    \item Request Rate: Die aggregierte Anzahl aller Requests pro Sekunde (req / s)
+\end{enumerate}
+
+Darüber hinaus bietet k6 mehrere Test-Typen an. Diese bestimmen, wie viele Benutzer zu welchen Zeitpunkt Anfragen an den Service stellen. Von den fünf angebotenen Typen sind die folgenden relevant:
+\begin{enumerate}
+    \item Load Testing: Dient der Evaluierung der System-Performance in Bezug auf die Anzahl der gleichzeitigen Benutzer oder der Requests-Rate.
+    
+    \item Stress Testing: Dient dazu, die Grenzen und Stabilität des Systems auszutesten
+\end{enumerate}
+
+Das Tool erlaubt in der kostenlosen Version maximal 50 gleichzeitige virtuelle Benutzer. 
+
+\subsection{Test Szenarien}
+Die folgenden Test Szenarien werden für die Analyse durchgeführt
+\begin{itemize}
+    \item Szenario A: Einzelne Notiz abrufen \\ 
+        Erst alle Notizen und dann eine einzelnen Notiz abrufen \\
+        1. GET /notes   -> 2s    \\
+        2. GET /notes/1 -> 2s    \\
+        
+    \item Szenario B: Notiz bearbeiten \\
+        Erst alle Notizen, dann eine einzelne Notiz abrufen und bearbeiten \\
+        1. GET /notes -> 2s     \\
+        2. GET /notes/1 -> 5s   \\
+        3. PUT /notes/1         \\
+        
+    \item Szenario C: Notiz falsch erstellt \\
+    Der Benutzer ruft alle Notizen ab. Er entscheidet sich eine Notiz erstellen. Er ruft die erstellte Notiz ab und bemerkt dass er einen Fehler gemacht hat. Er bearbeitet die Notiz und speichert die Notiz erneut ab. \\
+        1. GET /notes   -> 10s  \\
+        2. POST /notes  -> 3s   \\
+        3. GET /notes/1 -> 5s   \\
+        4. PUT /notes/1
+\end{itemize}
