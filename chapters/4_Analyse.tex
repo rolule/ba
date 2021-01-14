@@ -1,4 +1,26 @@
 \chapter{Analyse}
 In diesem Kapitel werden die in Kapitel 3 vorgestellten Analysen durchgeführt.
 
-\section{}
+\section{Notizen}
+
+Lambda 128mb 5min stress:
+req     fails   peak-rps    avg     p95     p99     min     max     ce  mu  duration 
+3864    0       26.3        41ms    63      112     23      740     7   71  6-20ms
+3873    0       26.7        40ms    61.3    99.7    22      670     9   73  5-12ms
+
+Lambda 128mb 12min stress (/notes):
+vu  req     fails   p-rps   p-rpm   avg-ms  p95-ms  p99-ms  min-ms  max ce  mu  dur-ms  std
+1   235422  0       546     32540   28      36      74      21      509 44  80  2-2     12
+2   402468  0       935     54800   40-48   44-51   107-115 23-18   793 84  82  2-15    14-15
+3   664391  0       1536    91000   28-37   38-46   72-93   23-30   1k  129 81  2-5     12
+
+Fargate 128cpu 128mb 1task stress 12min (/notes):
+vu  req     fails   p-rps   p-rpm   avg-ms  p95-ms  p99-ms  min-ms  max     mu  cpu     std
+1   291384  0       676     39800   11      12      41      8       344     8   92      5
+2   434568  1 (502) 796     45800   32-41   80-89   147-152 8-13    250-315 8   100     12-28
+3   481356  1 (502) 881     45800   59-246  119-239 150-253 8-19    353-354 8   100     44-62
+4   488114  5 (502) 987     45400   89-175  138-267 251-357 9-89    457-550 9   100     67-77
+
+Fargate 256cpu 512mb 1task stress:
+req     fails   peak-rps    peak-rpm    avg-ms  p95-ms  p99-ms  min     max     cpu
+880788  0       1982        109000      17-98   19-101  60-154  7-89    151-237 100

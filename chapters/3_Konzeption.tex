@@ -82,7 +82,7 @@ Um die Performance der eben vorgestellten Anwendungen zu testen, wird die Perfor
             \item 503 (Service Unavailable): Der Server kann den Request nicht bearbeiten. Kann auftreten, wenn zu viele Requests bei einem Service eintreffen und dieser aufgrund mangelnder verfügbarer Ressourcen (CPU / Speicher) nicht in der Lage ist, die Anfrage zu bearbeiten.
         \end{enumerate}
         
-    \item Request Rate: Die aggregierte Anzahl aller Requests pro Sekunde (req / s)
+    \item Request Rate: Die aggregierte Anzahl aller bereits abgeschlossenen Requests pro Sekunde (req / s)
 \end{enumerate}
 
 Darüber hinaus bietet k6 mehrere Test-Typen an. Diese bestimmen, wie viele Benutzer zu welchen Zeitpunkt Anfragen an den Service stellen. Von den fünf angebotenen Typen sind die folgenden relevant:
@@ -91,6 +91,7 @@ Darüber hinaus bietet k6 mehrere Test-Typen an. Diese bestimmen, wie viele Benu
     
     \item Stress Testing: Dient dazu, die Grenzen und Stabilität des Systems auszutesten
 \end{enumerate}
+
 
 Das Tool erlaubt in der kostenlosen Version maximal 50 gleichzeitige virtuelle Benutzer. Als Testing-Region, in der die VUS erstellt werden, wurde Paris ausgewählt, da die AWS Region eu-central-1 sich in Frankfurt am Main befindet. Paris ist somit noch nah genug aber nicht zu nah an den Rechenzentren auf dem die Services laufen.
 
