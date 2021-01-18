@@ -64,7 +64,7 @@ Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. 
 
 \subsection{Container}
 Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
-Die Ausführung der Anwendung erfolgt auf der AWS Elastic Container Service (ECS) Plattform, einem von AWS bereitgestelltem Orchestrations-Tool. Es wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren. Des Weiteren wird ein Load Balancer verwendet, um die eingehenden Requests auf die verschiedenen Container zu verteilen. 
+Die Ausführung der Anwendung erfolgt auf der AWS Elastic Container Service (ECS) Plattform, einem von AWS bereitgestelltem Orchestrations-Tool. Es wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren. Des Weiteren wird ein Elastic Load Balancer (ELB) vom Typ Application verwendet, um die eingehenden Requests auf die verschiedenen Container zu verteilen. 
 
 \section{Konzeption der Tests}
 
@@ -87,10 +87,14 @@ Um die Performance der eben vorgestellten Anwendungen zu testen, wird die Perfor
 
 Darüber hinaus bietet k6 mehrere Test-Typen an. Diese bestimmen, wie viele Benutzer zu welchen Zeitpunkt Anfragen an den Service stellen. Von den fünf angebotenen Typen sind die folgenden relevant:
 \begin{enumerate}
-    \item Load Testing: Dient der Evaluierung der System-Performance in Bezug auf die Anzahl der gleichzeitigen Benutzer oder der Requests-Rate.
+    \item Load Testing: Dient der Evaluierung der System-Performance in Bezug auf die Anzahl der gleichzeitigen Benutzer oder der Requests-Rate. Es wird der Normalbetrieb des Systems simuliert.
     
-    \item Stress Testing: Dient dazu, die Grenzen und Stabilität des Systems auszutesten
+    \item Stress Testing: Dient dazu, die Grenzen des Systems in den Punkten Verfügbarkeit und  Stabilität auszutesten. Man geht über den normalen Betrieb hinaus und eventuell so hoch dass das System der Last nicht mehr standhalten kann. Bei einem Stress-Test wird schrittweise die Last auf das System erhöht. So kann man zum Beispiel herausfinden, ob das System großen Anstürmen, wie z.B einem Sale-Event bei einem Online-Shop, Stand halten kann.
+    
+    \item Spike Testing: Eine Variante des Stress-Tests bei dem in einem kurzen Zeitraum extreme Last für das System-under-Test generiert wird. Im Gegensatz zu einem normalen Stress-Test, wird die Last hierbei nicht stufenweise, sondern plötzlich erhöht. Dadurch wird getestet, wie das System reagiert, wenn nicht ausreichend Zeit zur Skalierung der Infrastruktur bekommt.
 \end{enumerate}
+
+Es gibt noch weitere Test Typen wie Smoke- oder Soak-Tests, die allerdings keine Relevanz für die Evaluierung der System-Performanz haben und daher nicht betrachtet werden.
 
 \subsection{Test Szenarien}
 Die folgenden Test Szenarien werden für die Analyse durchgeführt
@@ -107,4 +111,20 @@ Die folgenden Test Szenarien werden für die Analyse durchgeführt
         2. POST /notes  -> 3s   \\
         3. GET /notes/1 -> 5s   \\
         4. PUT /notes/1
+\end{itemize}
+
+
+\subsection{Test Variablen}
+\begin{itemize}
+    \item Test Typ: Load, Stress oder Spike-Test (Smoke Test ist unnötig)
+    \item Test Dauer: 0-12 min
+    \item CPU und Memory des Systems: 128-...
+    \item Skalierungs-Schwellen: Ab 60 / 70 / 75 Prozent CPU Auslastung
+    \item Skalierungs-Größe: 2 / 3 / 5 / 10 Task-Instanzen
+    \item Anzahl an parallelen Benutzern: 25 / 50 / 75 / 100 ... 200
+    \item Größe der Lambda Funktion
+    \item Abfragen eines oder mehrerer Endpunkte: Bei Lambda großer Unterschied 
+
+    \item (Datenbank)
+    \item (Minimiertes JavaScript)
 \end{itemize}
