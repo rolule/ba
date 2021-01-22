@@ -54,7 +54,8 @@ Als Testanwendung wird ein einfaches REST-Backend am Beispiel eines Notiz-Applik
     \item POST /: Das Erstellen einer Notiz
 \end{enumerate}
 
-Um die Anwendung möglichst einfach zu gestalten und Unterschiede zwischen den beiden Technologien zu minimieren, wird zunächst auf die Verwendung einer Datenbank verzichtet. Stattdessen werden randomisierte Timeouts in allen Anfragen verwendet.
+Um die Anwendung möglichst einfach zu gestalten und Unterschiede zwischen den beiden Technologien zu minimieren, wird zunächst auf die Verwendung einer Datenbank verzichtet. Stattdessen wird ein Delay von 50 Millisekunden für jeden Request eingebaut. 
+Auch auf Authorisierungs-Mechanismen wird der Einfachheit halber verzichtet. Dies erlaubt es außerdem, von einer konstanten Benutzer-Rate auszugehen. 
 Als Runtime wird in beiden Fällen Node.js 12 verwendet.
 
 \subsection{Serverless}
@@ -62,19 +63,40 @@ Für die Entwicklung der Serverless-Anwendung wird das populäre (36.000 Github-
 
 Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Denn auch wenn man sich nicht mehr um Server kümmern muss, ist dennoch die Konfiguration des API-Gateways notwendig.
 
+Abbildung \ref{fig:notes-serverless} zeigt das Setup der mit der Serverless-Architektur konzipierten Webanwendung.
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/platzhalter.png}
+    \caption[Serverless Notiz-Anwendung]{Serverless Notiz-Anwendung}
+    \label{fig:notes-serverless}
+\end{figure}
+
 \subsection{Container}
 Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
 Die Ausführung der Anwendung erfolgt auf der AWS Elastic Container Service (ECS) Plattform, einem von AWS bereitgestelltem Orchestrations-Tool. Es wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren. Des Weiteren wird ein Elastic Load Balancer (ELB) vom Typ Application verwendet, um die eingehenden Requests auf die verschiedenen Container zu verteilen. 
 
+Abbildung \ref{fig:notes-container} zeigt das Setup der mit der Container-Architektur konzipierten Notiz-Anwendung.
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/platzhalter.png}
+    \caption[Containerisierte Notiz-Anwendung]{Containerisierte Notiz-Anwendung}
+    \label{fig:notes-container}
+\end{figure}
+
 \section{Konzeption der Tests}
 
-\subsection{Testing Tool}
-Um die Performance der eben vorgestellten Anwendungen zu testen, wird die Performance-Testing Plattform k6 Cloud\cite{noauthor_load_nodate} verwendet. Dabei handelt es sich um ein cloudbasiertes Tool, mit der sich virtuelle Benutzer zum Testen einer Anwendung erstellen lassen. Die Benutzer arbeiten dann parallel vordefinierte Test-Szenarien ab, bei denen verschiedene Requests an die REST-APIs der Services geschickt werden. Das Tool speichert dabei für jeden Request an einen bestimmten API-Endpunkt Werte unter anderem folgender Metriken: 
+\subsection{Testing-Tool}
+Um die Performance der eben vorgestellten Anwendungen zu testen, wird das Performance-Testing Tool k6 \cite{noauthor_load_nodate} verwendet. Durch eine optimierte CPU Auslastung ermöglicht es, etliche virtuelle Benutzer zum Testen einer Anwendung erstellen lassen ohne dass eine verteile Ausführung benötigt wird\cite{noauthor_running_nodate}. Die Benutzer arbeiten dann parallel vordefinierte Test-Szenarien ab, bei denen verschiedene Requests an die REST-APIs der Services geschickt werden. 
 
+Als Load-Generator wird eine in der AWS Region Paris (eu-west-3) stationierte EC2 Instanz des Typs t3.large verwendet.
+Nach eigenen Angaben benötigt k6 für jeden virtuellen Benutzer und für einen kleinen Test eine Speicherauslastung zwischen 1 und 5 Megabyte\cite{noauthor_running_nodate}. Da die verwendete t3.large Instanz 8 Gigabyte RAM beinhaltet, sollten theoretisch mehr als 1600 und maximal 8000 gleichzeitige virtuelle Benutzer von der Testumgebung unterstützt werden. Die Instanz weist eine Netzwerkleistung von bis zu 5 Gbit/s auf, welche bei jeder Testausführung mittels des Tools iftop überwacht wird, um sicherzugehen, dass das Netzwerk nicht zum Flaschenhals wird. Auch die CPU Auslastung wird mittels htop überprüft.
+
+\subsection{Metriken}
+Das Testing-Tool speichert für jeden Request an einen bestimmten API-Endpunkt Werte folgender Metriken:
 \begin{enumerate}
-    \item VUS (virtual users): Die aggregierte Anzahl der virtuellen Benutzer zum aktuellen Zeitpunkt 
+    \item VUS (virtual users): Die Anzahl der virtuellen Benutzer zum aktuellen Zeitpunkt 
     
-    \item Response Time: Die Zeit vom Abschicken eines Requests bis zum Erhalt der Antwort in Millisekunden (ms). Dabei wird Aufwand für eventuelle DNS Lookups nicht mit einberechnet.
+    \item Response Time: Die Zeit vom Abschicken eines Requests bis zum Erhalt der Antwort in Millisekunden (ms). Dabei wird Aufwand für eventuelle DNS Lookups nicht mit einberechnet. 
     
     \item HTTP-Statuscodes: Geben den Status eines HTTP-Requests an. Wichtig für die Betrachtung sind vor allem die Codes:
         \begin{enumerate}
@@ -85,6 +107,17 @@ Um die Performance der eben vorgestellten Anwendungen zu testen, wird die Perfor
     \item Request Rate: Die aggregierte Anzahl aller bereits abgeschlossenen Requests pro Sekunde (req / s)
 \end{enumerate}
 
+Da k6 keine eingebaute Visualisierungslösung bietet, werden diese Werte mittels der k6 Integration an den Cloud-Monitoring Service Datadog gesendet. Dort treffen sie mit von AWS Cloudwatch gesammelten Metriken zusammen, wodurch sie gemeinsam ausgewertet werden können.
+
+Abbildung \ref{fig:test-architecture} zeigt das vollständige Setup der mit der Testing-Architektur.
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/platzhalter.png}
+    \caption[Test Architektur der Notiz-Anwendung]{Test Architektur der Notiz-Anwendung}
+    \label{fig:test-architecture}
+\end{figure}
+
+\subsection{Test-Typen}
 Darüber hinaus bietet k6 mehrere Test-Typen an. Diese bestimmen, wie viele Benutzer zu welchen Zeitpunkt Anfragen an den Service stellen. Von den fünf angebotenen Typen sind die folgenden relevant:
 \begin{enumerate}
     \item Load Testing: Dient der Evaluierung der System-Performance in Bezug auf die Anzahl der gleichzeitigen Benutzer oder der Requests-Rate. Es wird der Normalbetrieb des Systems simuliert.
@@ -96,16 +129,20 @@ Darüber hinaus bietet k6 mehrere Test-Typen an. Diese bestimmen, wie viele Benu
 
 Es gibt noch weitere Test Typen wie Smoke- oder Soak-Tests, die allerdings keine Relevanz für die Evaluierung der System-Performanz haben und daher nicht betrachtet werden.
 
-\subsection{Test Szenarien}
-Die folgenden Test Szenarien werden für die Analyse durchgeführt
+\subsection{Test-Szenarien}
+Die folgenden Test Szenarien werden für die Analyse durchgeführt. Die nach einem Request angegebenen Zeitintervalle entsprechen der sogenannten "`Think Time"', also der Zeit die ein Benutzer normalerweise benötigt um sich für seine nächste Handlung zu entscheiden. Es wird, wie von Molyneaux empfohlen, mit einer ±10 prozentigen Abweichung versucht, eine realistischere  Szenariodurchführung zu erreichen \cite{molyneaux_art_2014}.
 \begin{itemize}
-    \item Szenario A: Notiz bearbeiten \\
-        Erst alle Notizen, dann eine einzelne Notiz abrufen und bearbeiten \\
+    \item Szenario A: Alle Notizen abrufen \\
+        Alle Notizen einmal abrufen. \\
+        1. GET /notes -> 2s     \\
+
+    \item Szenario B: Notiz bearbeiten \\
+        Erst alle Notizen, dann eine einzelne Notiz abrufen und bearbeiten. \\
         1. GET /notes -> 2s     \\
         2. GET /notes/1 -> 5s   \\
         3. PUT /notes/1         \\
         
-    \item Szenario B: Notiz falsch erstellt \\
+    \item Szenario C: Notiz falsch erstellt \\
     Der Benutzer ruft alle Notizen ab. Er entscheidet sich eine Notiz erstellen. Er ruft die erstellte Notiz ab und bemerkt dass er einen Fehler gemacht hat. Er bearbeitet die Notiz und speichert die Notiz erneut ab. \\
         1. GET /notes   -> 10s  \\
         2. POST /notes  -> 3s   \\
@@ -114,17 +151,24 @@ Die folgenden Test Szenarien werden für die Analyse durchgeführt
 \end{itemize}
 
 
-\subsection{Test Variablen}
+\subsection{Test-Variablen}
 \begin{itemize}
-    \item Test Typ: Load, Stress oder Spike-Test (Smoke Test ist unnötig)
-    \item Test Dauer: 0-12 min
+    \item Test Typ: Pipe-clean, Load, Stress, Spike-Test 
+    \item Test Injection Type: gestufter Ramp-up, BigBang
+    \item Test Dauer
     \item CPU und Memory des Systems: 128-...
-    \item Skalierungs-Schwellen: Ab 60 / 70 / 75 Prozent CPU Auslastung
     \item Skalierungs-Größe: 2 / 3 / 5 / 10 Task-Instanzen
     \item Anzahl an parallelen Benutzern: 25 / 50 / 75 / 100 ... 200
     \item Größe der Lambda Funktion
-    \item Abfragen eines oder mehrerer Endpunkte: Bei Lambda großer Unterschied 
+    \item Unterschiedliche Szenarien: Bei Lambda großer Unterschied 
 
-    \item (Datenbank)
+    \item (Datenbank -> vielleicht Einfluss auf Memory?)
+    \item (Skalierungs-Schwellen: Ab 60 / 70 / 75 Prozent CPU Auslastung)
     \item (Minimiertes JavaScript)
 \end{itemize}
+
+\subsection{Test-Reihenfolge}
+\begin{enumerate}
+    \item Pipe-clean Test: Nach Molyneaux \cite{molyneaux_art_2014} sollte zunächst ein Pipe-clean Test durchgeführt werden. Dabei wird jedes System von nur einem einzigen Benutzer für ein bestimmtes Szenario angefragt. Dadurch lassen sich Basiswerte für die betrachteten Metriken ableiten, welche in späteren Tests zu Vergleichen hinzugezogen werden können.
+    \item 
+\end{enumerate}
