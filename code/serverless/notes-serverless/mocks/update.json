@@ -1,0 +1,6 @@
+{
+  "pathParameters": {
+    "id": 2
+  },
+  "body": "{\"title\": \"Updated note\", \"content\": \"I am the updated note.\"}"
+}
