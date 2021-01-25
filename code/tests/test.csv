@@ -1,0 +1,11 @@
+metric_name,timestamp,metric_value,check,error,error_code,group,method,name,proto,scenario,service,status,subproto,tls_version,url,extra_tags
+http_reqs,1611584276,1.000000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+http_req_duration,1611584276,65.653000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+http_req_blocked,1611584276,30.418000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+http_req_connecting,1611584276,12.651000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+http_req_tls_handshaking,1611584276,0.000000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+http_req_sending,1611584276,0.100000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+http_req_waiting,1611584276,65.367000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+http_req_receiving,1611584276,0.186000,,,,,GET,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,HTTP/1.1,default,,200,,,http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com/notes,
+data_sent,1611584276,138.000000,,,,,,,,default,,,,,,
+data_received,1611584276,545.000000,,,,,,,,default,,,,,,
