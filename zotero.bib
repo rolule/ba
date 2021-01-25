@@ -1,4 +1,554 @@
 
+@online{noauthor_pandas_nodate,
+	title = {pandas - Python Data Analysis Library},
+	url = {https://pandas.pydata.org/},
+	urldate = {2021-01-25},
+}
+
+@misc{noauthor_incloud_nodate,
+	title = {{INCLOUD} Abschlussarbeit},
+	url = {https://incloudde-my.sharepoint.com/personal/robin_luley_incloud_de/Documents/Microsoft%20Teams-Chatdateien/ServerlessvsContainer.pdf},
+	urldate = {2021-01-25},
+	langid = {german},
+}
+
+@article{ajay_joshi_measuring_2006,
+	title = {Measuring benchmark similarity using inherent program characteristics},
+	volume = {55},
+	issn = {1557-9956},
+	doi = {10.1109/TC.2006.85},
+	abstract = {This paper proposes a methodology for measuring the similarity between programs based on their inherent microarchitecture-independent characteristics, and demonstrates two applications for it: 1) finding a representative subset of programs from benchmark suites and 2) studying the evolution of four generations of {SPEC} {CPU} benchmark suites. Using the proposed methodology, we find a representative subset of programs from three popular benchmark suites - {SPEC} {CPU}2000, {MediaBench}, and {MiBench}. We show that this subset of representative programs can be effectively used to estimate the average benchmark suite {IPC}, L1 data cache miss-rates, and speedup on 11 machines with different {ISAs} and microarchitectures - this enables one to save simulation time with little loss in accuracy. From our study of the similarity between the four generations of {SPEC} {CPU} benchmark suites, we find that, other than a dramatic increase in the dynamic instruction count and increasingly poor temporal data locality, the inherent program characteristics have more or less remained unchanged},
+	pages = {769--782},
+	number = {6},
+	journaltitle = {{IEEE} Transactions on Computers},
+	author = {{Ajay Joshi} and {Aashish Phansalkar} and Eeckhout, Lieven and John, Lizy K.},
+	date = {2006-06},
+	note = {Conference Name: {IEEE} Transactions on Computers},
+	keywords = {{IPC}, L1 data cache miss-rates, Measurement techniques, {MediaBench}, {MiBench}, {SPEC} {CPU} benchmark suites, Software performance, benchmark similarity measurement, benchmark testing, inherent microarchitecture-independent characteristics, inherent program characteristics, modeling techniques, performance attributes., performance of systems, software performance evaluation},
+}
+
+@article{hoste_microarchitecture-independent_2007,
+	title = {Microarchitecture-Independent Workload Characterization},
+	volume = {27},
+	issn = {1937-4143},
+	doi = {10.1109/MM.2007.56},
+	abstract = {For computer designers, understanding the characteristics of workloads running on current and future computer systems is of utmost importance during microprocessor design a microarchitecture-independent method ensures an accurate characterization of inherent program behavior and avoids the weaknesses of microarchitecture-dependent metrics.},
+	pages = {63--72},
+	number = {3},
+	journaltitle = {{IEEE} Micro},
+	author = {Hoste, Kenneth and Eeckhout, Lieven},
+	date = {2007-05},
+	note = {Conference Name: {IEEE} Micro},
+	keywords = {Application software, Biometrics, Computational modeling, Counting circuits, Design optimization, Hardware, Microarchitecture, Microprocessors, Performance analysis, Solids, computer architecture, computer designers, computer systems, measurement techniques, microarchitecture-independent workload characterization, microprocessor design, microprogramming, modeling techniques, performance attributes, workload characterization},
+}
+
+@online{gherorghiu_agile_2005,
+	title = {Agile Testing: Performance vs. load vs. stress testing},
+	url = {http://agiletesting.blogspot.com/2005/02/performance-vs-load-vs-stress-testing.html},
+	shorttitle = {Agile Testing},
+	titleaddon = {Agile Testing},
+	author = {Gherorghiu, Grig},
+	urldate = {2021-01-20},
+	date = {2005-02-28},
+	langid = {english},
+}
+
+@online{jonas_microservices_2016,
+	title = {Microservices and Teraflops},
+	url = {http://ericjonas.com/post/pywren1/},
+	abstract = {Can {AWS} Lambda be used for scientific computing?},
+	titleaddon = {Eric Jonas},
+	author = {Jonas, Eric},
+	urldate = {2021-01-18},
+	date = {2016-10-25},
+	langid = {english},
+}
+
+@article{papadopoulos_methodological_2019,
+	title = {Methodological Principles for Reproducible Performance Evaluation in Cloud Computing},
+	issn = {1939-3520},
+	doi = {10.1109/TSE.2019.2927908},
+	abstract = {The rapid adoption and the diversification of cloud computing technology exacerbate the importance of a sound experimental methodology for this domain. This work investigates how to measure and report performance in the cloud, and how well the cloud research community is already doing it. We propose a set of eight important methodological principles that combine best-practices from nearby fields with concepts applicable only to clouds, and with new ideas about the time-accuracy trade-off. We show how these principles are applicable using a practical use-case experiment. To this end, we analyze the ability of the newly released {SPEC} Cloud {IaaS} benchmark to follow the principles, and showcase real-world experimental studies in common cloud environments that meet the principles. Last, we report on a systematic literature review including top conferences and journals in the field, from 2012 to 2017, analyzing if the practice of reporting cloud performance measurements follows the proposed eight principles. Worryingly, this systematic survey and the subsequent two-round human reviews, reveal that few of the published studies follow the eight experimental principles. We conclude that, although these important principles are simple and basic, the cloud community is yet to adopt them broadly to deliver sound measurement of cloud environments.},
+	pages = {1--1},
+	journaltitle = {{IEEE} Transactions on Software Engineering},
+	author = {Papadopoulos, Alessandro V. and Versluis, Laurens and Bauer, André and Herbst, Nikolas and von Kistowski, Jóakim and Ali-eldin, Ahmed and Abad, Christina L. and Amaral, José N. and Tůma, Petr and Iosup, Alexandru},
+	date = {2019},
+	note = {Conference Name: {IEEE} Transactions on Software Engineering},
+	keywords = {Benchmark testing, Cloud computing, Computer performance, Experimental evaluation, Performance evaluation, Software engineering, Systematics, experimentation, observation study},
+}
+
+@report{eismann_review_2020,
+	title = {A Review of Serverless Use Cases and their Characteristics},
+	url = {https://research.spec.org/fileadmin/user_upload/documents/rg_cloud/endorsed_publications/SPEC_RG_2020_Serverless_Usecases.pdf},
+	abstract = {The serverless computing paradigm promises many desirable properties for cloud applications—
+low-cost, fine-grained deployment, and management-free operation. Consequently, the paradigm
+has underwent rapid growth: there currently exist tens of serverless platforms and all global cloud
+providers host serverless operations. To help tune existing platforms, guide the design of new
+serverless approaches, and overall contribute to understanding this paradigm, in this work we
+present a long-term, comprehensive effort to identify, collect, and characterize serverless use
+cases. We survey 89 use cases, sourced from white and grey literature, and from consultations
+with experts in areas such as scientific computing. We study each use case using 24 characteristics, including general aspects, but also workload, application, and requirements. When the
+use cases employ workflows, we further analyze their characteristics. Overall, we hope our study
+will be useful for both academia and industry, and encourage the community to further share
+and communicate their use cases.},
+	pages = {47},
+	number = {{SPEC}-{RG}-2020-8},
+	institution = {{SPEC}},
+	author = {Eismann, Simon and Scheuner, Joel and van Eyk, Erwin and Schwinger, Maximilian and Grohmann, Johannes and Herbst, Nikolas and Abad, Christina L. and Iosup, Alexandru},
+	urldate = {2021-01-25},
+	date = {2020-04-08},
+	langid = {english},
+}
+
+@article{martins_benchmarking_nodate,
+	title = {Benchmarking Serverless Computing Platforms},
+	pages = {19},
+	author = {Martins, Horácio and Araujo, Filipe and Rupino da Cunha, Paulo},
+	langid = {english},
+}
+
+@inreference{noauthor_varianz_2021,
+	title = {Varianz (Stochastik)},
+	rights = {Creative Commons Attribution-{ShareAlike} License},
+	url = {https://de.wikipedia.org/w/index.php?title=Varianz_(Stochastik)&oldid=207244046},
+	abstract = {Die Varianz (lateinisch variantia „Verschiedenheit“ bzw. variare „(ver)ändern, verschieden sein“) ist ein Maß für die Streuung der Wahrscheinlichkeitsdichte um ihren Schwerpunkt. Mathematisch wird sie definiert als die mittlere quadratische Abweichung einer reellen Zufallsvariablen von ihrem Erwartungswert. Sie ist das zentrale Moment zweiter Ordnung einer Zufallsvariablen.
+Die Varianz kann physikalisch als Trägheitsmoment interpretiert und mit einem Varianzschätzer, z. B. der Stichprobenvarianz, bestimmt werden. Die Quadratwurzel  der Varianz ist das als Standardabweichung bezeichnete wichtigste Streuungsmaß in der Stochastik.
+Die Bezeichnung „Varianz“ wurde vor allem von dem britischen Statistiker Ronald Fisher (1890–1962) geprägt. Weitere Wörter für die Varianz sind das veraltete Dispersion (lateinisch dispersio „Zerstreuung“ bzw. dispergere „verteilen, ausbreiten, zerstreuen“), das Streuungsquadrat oder die Streuung.
+Zu den Eigenschaften der Varianz gehören, dass sie niemals negativ ist und sich bei Verschiebung der Verteilung nicht ändert. Die Varianz einer Summe unkorrelierter Zufallsvariablen ist gleich der Summe ihrer Varianzen. Ein Nachteil der Varianz für praktische Anwendungen ist, dass sie im Unterschied zur Standardabweichung eine andere Einheit als die Zufallsvariable besitzt. Da sie über ein Integral definiert wird, existiert sie nicht für alle Verteilungen, d. h., sie kann auch unendlich sein.
+Eine Verallgemeinerung der Varianz ist die Kovarianz. Im Unterschied zur Varianz, die die Variabilität der betrachteten Zufallsvariable misst, ist die Kovarianz ein Maß für die gemeinsame Variabilität von zwei Zufallsvariablen. Aus dieser Definition der Kovarianz folgt, dass die Kovarianz einer Zufallsvariable mit sich selbst gleich der Varianz dieser Zufallsvariablen ist. Im Falle eines reellen Zufallsvektors kann die Varianz zur Varianz-Kovarianzmatrix verallgemeinert werden.},
+	booktitle = {Wikipedia},
+	urldate = {2021-01-23},
+	date = {2021-01-04},
+	langid = {german},
+	note = {Page Version {ID}: 207244046},
+}
+
+@inreference{noauthor_quantil_2020,
+	title = {Quantil (Wahrscheinlichkeitstheorie)},
+	rights = {Creative Commons Attribution-{ShareAlike} License},
+	url = {https://de.wikipedia.org/w/index.php?title=Quantil_(Wahrscheinlichkeitstheorie)&oldid=205302404},
+	abstract = {Ein Quantil ist ein Lagemaß in der Statistik. Anschaulich ist ein Quantil ein Schwellenwert: ein bestimmter Anteil der Werte ist kleiner als das Quantil, der Rest ist größer. Das 25-\%-Quantil beispielsweise ist der Wert, für den gilt, dass 25 \% aller Werte kleiner sind als dieser Wert. Quantile formalisieren praktische Aussagen wie „25 \% aller Frauen sind kleiner als 1,62 m“ – wobei 1,62 m hier das 25-\%-Quantil ist.
+Eine bekannte Darstellung und Veranschaulichung einer Quantilfunktion aus der Ökonometrie ist die Parade der Einkommen (Pen’s Parade) des Ökonomen Jan Pen zur Einkommensverteilung.
+Genauer ist das 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+  -Quantil, wobei 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+   eine reelle Zahl zwischen 0 und 1 ist, ein Wert einer Variablen oder Zufallsvariablen, der die Menge aller Merkmalswerte (salopp „die Verteilung“) in zwei Abschnitte unterteilt: Links vom 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+  -Quantil liegt der Anteil 
+  
+    
+      
+        p
+         
+        (
+        =
+        100
+        p
+        
+        \%
+        )
+      
+    
+    \{{\textbackslash}displaystyle p{\textbackslash} (=100p{\textbackslash},{\textbackslash}\%)\}
+   aller Beobachtungswerte oder der Gesamtzahl der Zufallswerte oder der Fläche unter der Dichtekurve; rechts davon liegt der jeweilige restliche Anteil 
+  
+    
+      
+        1
+        −
+        p
+         
+        (
+        =
+        100
+        (
+        1
+        −
+        p
+        )
+        
+        \%
+        )
+      
+    
+    \{{\textbackslash}displaystyle 1-p{\textbackslash} (=100(1-p){\textbackslash},{\textbackslash}\%)\}
+  . Die Zahl 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+   heißt auch der Unterschreitungsanteil.
+Spezielle Quantile sind der Median, die Quartile, die Quintile, die Dezile und die Perzentile.
+Als Quantil der Ordnung 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+   oder 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+  -Quantil 
+  
+    
+      
+        Q
+        (
+        p
+        )
+      
+    
+    \{{\textbackslash}displaystyle Q(p)\}
+   (veraltet auch „Fraktil“) wird in der Statistik ein Merkmalswert bezeichnet, unterhalb dessen ein vorgegebener Anteil 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+   aller Fälle der Verteilung liegt. Jeder Wert unterhalb von 
+  
+    
+      
+        Q
+        (
+        p
+        )
+      
+    
+    \{{\textbackslash}displaystyle Q(p)\}
+   unterschreitet diesen vorgegebenen Anteil. Dabei kann der Unterschreitungsanteil 
+  
+    
+      
+        p
+      
+    
+    \{{\textbackslash}displaystyle p\}
+   auch als eine reelle Zahl zwischen 0 (gar kein Fall der Verteilung) und 1 (alle Fälle bzw. 100 \% der Verteilung) angegeben werden.},
+	booktitle = {Wikipedia},
+	urldate = {2021-01-23},
+	date = {2020-11-08},
+	langid = {german},
+	note = {Page Version {ID}: 205302404},
+}
+
+@inreference{noauthor_verteilungsfunktion_2020,
+	title = {Verteilungsfunktion},
+	rights = {Creative Commons Attribution-{ShareAlike} License},
+	url = {https://de.wikipedia.org/w/index.php?title=Verteilungsfunktion&oldid=201484998},
+	abstract = {Die Verteilungsfunktion ist eine spezielle reelle Funktion in der Stochastik und ein zentrales Konzept bei der Untersuchung von Wahrscheinlichkeitsverteilungen auf den reellen Zahlen. Jeder Wahrscheinlichkeitsverteilung und jeder reellwertigen Zufallsvariable kann eine Verteilungsfunktion zugeordnet werden. Anschaulich entspricht dabei der Wert der Verteilungsfunktion an der Stelle 
+  
+    
+      
+        x
+      
+    
+    \{{\textbackslash}displaystyle x\}
+   der Wahrscheinlichkeit, dass die zugehörige Zufallsvariable 
+  
+    
+      
+        X
+      
+    
+    \{{\textbackslash}displaystyle X\}
+   einen Wert kleiner oder gleich 
+  
+    
+      
+        x
+      
+    
+    \{{\textbackslash}displaystyle x\}
+   annimmt. Ist beispielsweise die Verteilung der Schuhgrößen in Europa gegeben, so entspricht der Wert der entsprechenden Verteilungsfunktion bei 45 der Wahrscheinlichkeit, dass ein beliebiger Europäer die Schuhgröße 45 oder kleiner besitzt.
+Ihre Bedeutung erhält die Verteilungsfunktion durch den Korrespondenzsatz, der besagt, dass jeder Verteilungsfunktion eine Wahrscheinlichkeitsverteilung auf den reellen Zahlen zugeordnet werden kann und umgekehrt. Die Zuordnung ist bijektiv. Dies ermöglicht es, anstelle der Untersuchung von Wahrscheinlichkeitsverteilungen als Mengenfunktionen auf einem komplexen Mengensystem mit Methoden der Maßtheorie die entsprechenden Verteilungsfunktionen zu untersuchen. Diese sind reelle Funktionen und somit über die Methoden der reellen Analysis leichter zugänglich.
+Als alternative Bezeichnungen finden sich unter anderem kumulierte Verteilungsfunktion, da sie die Wahrscheinlichkeiten kleiner als 
+  
+    
+      
+        x
+      
+    
+    \{{\textbackslash}displaystyle x\}
+   zu sein anhäuft, siehe auch kumulierte Häufigkeit. Des Weiteren wird sie zur besseren Abgrenzung von ihrem höherdimensionalen Pendant, der multivariaten Verteilungsfunktion, auch als univariate Verteilungsfunktion bezeichnet. In Abgrenzung zum allgemeineren Maßtheoretischen Konzept einer Verteilungsfunktion finden sich die Bezeichnungen als wahrscheinlichkeitstheoretische Verteilungsfunktion oder als Verteilungsfunktion im engeren Sinn.Die Entsprechung der Verteilungsfunktion in der deskriptiven Statistik ist die empirische Verteilungs- oder Summenhäufigkeitsfunktion.},
+	booktitle = {Wikipedia},
+	urldate = {2021-01-23},
+	date = {2020-07-01},
+	langid = {german},
+	note = {Page Version {ID}: 201484998},
+}
+
+@online{noauthor_data_nodate,
+	title = {data visualization - How to read a value-quantile diagram?},
+	url = {https://stats.stackexchange.com/questions/64796/how-to-read-a-value-quantile-diagram},
+	titleaddon = {Cross Validated},
+	urldate = {2021-01-23},
+}
+
+@online{noauthor_wie_nodate,
+	title = {Wie ist die Statistik zu interpretieren?},
+	url = {https://www.rtr.at/TKP/service/rtr-nettest/help/test_result/netztestfaq_testergebnis_1100.de.html},
+	titleaddon = {{RTR}},
+	urldate = {2021-01-23},
+	langid = {german},
+}
+
+@incollection{jeffay_using_2003,
+	location = {Berlin, Heidelberg},
+	title = {Using Latency Quantiles to Engineer {QoS} Guarantees for Web Services},
+	volume = {2707},
+	isbn = {978-3-540-40281-7 978-3-540-44884-6},
+	url = {http://link.springer.com/10.1007/3-540-44884-5_19},
+	pages = {345--362},
+	booktitle = {Quality of Service — {IWQoS} 2003},
+	publisher = {Springer Berlin Heidelberg},
+	author = {Fiedler, Ulrich and Plattner, Bernhard},
+	editor = {Jeffay, Kevin and Stoica, Ion and Wehrle, Klaus},
+	urldate = {2021-01-23},
+	date = {2003},
+	langid = {english},
+	doi = {10.1007/3-540-44884-5_19},
+	note = {Series Title: Lecture Notes in Computer Science},
+}
+
+@book{noauthor_notitle_nodate,
+}
+
+@inproceedings{manner_cold_2018,
+	title = {Cold Start Influencing Factors in Function as a Service},
+	doi = {10.1109/UCC-Companion.2018.00054},
+	abstract = {Function as a Service ({FaaS}) is a young and rapidly evolving cloud paradigm. Due to its hardware abstraction, inherent virtualization problems come into play and need an assessment from the {FaaS} point of view. Especially avoidance of idling and scaling on demand cause a lot of container starts and as a consequence a lot of cold starts for {FaaS} users. The aim of this paper is to address the cold start problem in a benchmark and investigate influential factors on the duration of the perceived cold start. We conducted a benchmark on {AWS} Lambda and Microsoft Azure Functions with 49500 cloud function executions. Formulated as hypotheses, the influence of the chosen programming language, platform, memory size for the cloud function, and size of the deployed artifact are the dimensions of our benchmark. Cold starts on the platform as well as the cold starts for users were measured and compared to each other. Our results show that there is an enormous difference for the overhead the user perceives compared to the billed duration. In our benchmark, the average cold start overheads on the user's side ranged from 300ms to 24s for the chosen configurations.},
+	eventtitle = {2018 {IEEE}/{ACM} International Conference on Utility and Cloud Computing Companion ({UCC} Companion)},
+	pages = {181--188},
+	booktitle = {2018 {IEEE}/{ACM} International Conference on Utility and Cloud Computing Companion ({UCC} Companion)},
+	author = {Manner, J. and Endreß, M. and Heckel, T. and Wirtz, G.},
+	date = {2018-12},
+	keywords = {{AWS} Lambda, Benchmark testing, Cloud computing, Containers, {FAA}, Function as a Service, Java, Microsoft Azure Functions, Pipelines, Serverless Computing, Function as a Service, {FaaS}, Cloud Functions, Cold Start, Benchmarking, cloud computing, cloud function executions, cold start problem, container starts, virtualisation, virtualization problems},
+}
+
+@online{debrie_aws_2019,
+	title = {{AWS} {API} Performance Comparison: Serverless vs. Containers vs. {API} Gateway integration},
+	url = {https://alexdebrie.com/posts/aws-api-performance-comparison/},
+	shorttitle = {{AWS} {API} Performance Comparison},
+	abstract = {A performance comparison between three different methods of deploying an {API} on {AWS}},
+	author = {{DeBrie}, Alex},
+	urldate = {2021-01-22},
+	date = {2019-02-20},
+	langid = {english},
+}
+
+@article{figiela_performance_2018,
+	title = {Performance evaluation of heterogeneous cloud functions},
+	volume = {30},
+	issn = {1532-0634},
+	url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.4792},
+	doi = {https://doi.org/10.1002/cpe.4792},
+	abstract = {Cloud Functions, often called Function-as-a-Service ({FaaS}), pioneered by {AWS} Lambda, are an increasingly popular method of running distributed applications. As in other cloud offerings, cloud functions are heterogeneous due to variations in underlying hardware, runtime systems, as well as resource management and billing models. In this paper, we focus on performance evaluation of cloud functions, taking into account heterogeneity aspects. We developed a cloud function benchmarking framework, consisting of one suite based on Serverless Framework and one based on {HyperFlow}. We deployed the {CPU}-intensive benchmarks: Mersenne Twister and Linpack. We measured the data transfer times between cloud functions and storage, and we measured the lifetime of the runtime environment. We evaluated all the major cloud function providers: {AWS} Lambda, Azure Functions, Google Cloud Functions, and {IBM} Cloud Functions. We made our results available online and continuously updated. We report on the results of the performance evaluation, and we discuss the discovered insights into resource allocation policies.},
+	pages = {e4792},
+	number = {23},
+	journaltitle = {Concurrency and Computation: Practice and Experience},
+	author = {Figiela, Kamil and Gajek, Adam and Zima, Adam and Obrok, Beata and Malawski, Maciej},
+	urldate = {2021-01-22},
+	date = {2018},
+	langid = {english},
+	note = {\_eprint: https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.4792},
+	keywords = {{FaaS}, cloud computing, cloud functions, performance evaluation, serverless},
+}
+
+@online{noauthor_increasingcpuloadlvl1_nodate,
+	title = {{IncreasingCPULoadLvl}1 - Faastest - Benchmark {FaaS} Providers Powered by Nuweba},
+	url = {https://www.faastest.com/},
+	abstract = {Daily Tests from serverless provider for speed and performance},
+	urldate = {2021-01-22},
+}
+
+@online{datadog_11_0000,
+	title = {11 facts about real world container use},
+	url = {https://www.datadoghq.com/container-report/},
+	abstract = {Building on our yearly reports on how our customers are using containers, we are pleased to share our latest research into the use of containers and orchestration technologies like Kubernetes and Amazon {ECS}.},
+	titleaddon = {11 facts about real world container use},
+	author = {Datadog},
+	urldate = {2021-01-21},
+	date = {0000},
+	langid = {english},
+}
+
+@online{datadog_cloud_0400,
+	title = {Cloud Monitoring as a Service {\textbar} Datadog},
+	url = {https://www.datadoghq.com/},
+	abstract = {See metrics from all of your apps, tools \& services in one place with Datadog's cloud monitoring as a service solution. Try it for free.},
+	titleaddon = {Cloud Monitoring as a Service},
+	author = {Datadog},
+	urldate = {2021-01-21},
+	date = {0400},
+	langid = {english},
+}
+
+@online{noauthor_amazon_nodate,
+	title = {Amazon {EC}2 Instance-Typen – Amazon Web Services ({AWS})},
+	url = {https://aws.amazon.com/de/ec2/instance-types/},
+	abstract = {{AWS} {EC}2 bietet eine breite Palette an Instance-Typen, die es Ihnen ermöglichen, Ihre Cloud-Ressourcen gemäß Ihrer Ziel-Workloads zu skalieren. Erfahren Sie, welche Instance-Typen (Instance Types) Sie mit Amazon {EC}2 je nach Anwendung von T2 Instances bis zu M5 anwenden können.},
+	titleaddon = {Amazon Web Services, Inc.},
+	urldate = {2021-01-21},
+	langid = {german},
+}
+
+@online{noauthor_running_nodate,
+	title = {Running large tests},
+	url = {https://k6.io/docs/testing-guides/running-large-tests},
+	abstract = {How to run large-scale k6 tests without distributed-execution},
+	urldate = {2021-01-21},
+	langid = {english},
+}
+
+@book{molyneaux_art_2014,
+	edition = {2},
+	title = {The Art of Application Performance Testing, 2nd Edition},
+	isbn = {978-1-4919-0054-3},
+	url = {https://learning.oreilly.com/library/view/the-art-of/9781491900536/},
+	abstract = {Because performance is paramount today, this thoroughly updated guide shows you how to test mission-critical applications for scalability and performance before you deploy them—whether it’s to the cloud or a mobile device. You’ll learn the complete testing process lifecycle step-by-step, along with best practices to plan, coordinate, and conduct performance tests on your applications.},
+	publisher = {O'Reilly Media, Inc.},
+	author = {Molyneaux, Ian},
+	urldate = {2021-01-20},
+	date = {2014},
+	langid = {english},
+}
+
+@inreference{noauthor_stress_2021,
+	title = {Stress testing (software)},
+	rights = {Creative Commons Attribution-{ShareAlike} License},
+	url = {https://en.wikipedia.org/w/index.php?title=Stress_testing_(software)&oldid=1000101442},
+	abstract = {Stress testing is a software testing activity that determines the robustness of software by testing beyond the limits of normal operation. Stress testing is particularly important for "mission critical" software, but is used for all types of software. Stress tests commonly put a greater emphasis on robustness, availability, and error handling under a heavy load, than on what would be considered correct behavior under normal circumstances.},
+	booktitle = {Wikipedia},
+	urldate = {2021-01-20},
+	date = {2021-01-13},
+	langid = {english},
+	note = {Page Version {ID}: 1000101442},
+}
+
+@inreference{noauthor_software_2021,
+	title = {Software performance testing},
+	rights = {Creative Commons Attribution-{ShareAlike} License},
+	url = {https://en.wikipedia.org/w/index.php?title=Software_performance_testing&oldid=1000477195},
+	abstract = {In software quality assurance, performance testing is in general a testing practice performed to determine how a system performs in terms of responsiveness and stability under a particular workload. It can also serve to investigate, measure, validate or verify other quality attributes of the system, such as scalability, reliability and resource usage.
+Performance testing, a subset of performance engineering, is a computer science practice which strives to build performance standards into the implementation, design and architecture of a system.},
+	booktitle = {Wikipedia},
+	urldate = {2021-01-20},
+	date = {2021-01-15},
+	langid = {english},
+	note = {Page Version {ID}: 1000477195},
+}
+
+@online{archiveddocs_performance_nodate,
+	title = {Performance Testing Guidance for Web Applications},
+	url = {https://docs.microsoft.com/en-us/previous-versions/msp-n-p/bb924375(v=pandp.10)},
+	author = {Archiveddocs},
+	urldate = {2021-01-20},
+	langid = {english},
+}
+
+@article{scheuner_function-as--service_2020,
+	title = {Function-as-a-Service performance evaluation: A multivocal literature review},
+	volume = {170},
+	issn = {01641212},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0164121220301527},
+	doi = {10.1016/j.jss.2020.110708},
+	shorttitle = {Function-as-a-Service performance evaluation},
+	abstract = {Function-as-a-Service ({FaaS}) is one form of the serverless cloud computing paradigm and is defined through {FaaS} platforms (e.g., {AWS} Lambda) executing event-triggered code snippets (i.e., functions). Many studies that empirically evaluate the performance of such {FaaS} platforms have started to appear but we are currently lacking a comprehensive understanding of the overall domain. To address this gap, we conducted a multivocal literature review ({MLR}) covering 112 studies from academic (51) and grey (61) literature. We find that existing work mainly studies the {AWS} Lambda platform and focuses on micro-benchmarks using simple functions to measure {CPU} speed and {FaaS} platform overhead (i.e., container cold starts). Further, we discover a mismatch between academic and industrial sources on tested platform configurations, find that function triggers remain insufficiently studied, and identify {HTTP} {API} gateways and cloud storages as the most used external service integrations. Following existing guidelines on experimentation in cloud systems, we discover many flaws threatening the reproducibility of experiments presented in the surveyed studies. We conclude with a discussion of gaps in literature and highlight methodological suggestions that may serve to improve future {FaaS} performance evaluation studies.},
+	pages = {110708},
+	journaltitle = {Journal of Systems and Software},
+	shortjournal = {Journal of Systems and Software},
+	author = {Scheuner, Joel and Leitner, Philipp},
+	urldate = {2021-01-18},
+	date = {2020-12},
+	langid = {english},
+}
+
+@online{noauthor_elsevier_nodate,
+	title = {Elsevier Enhanced Reader},
+	url = {https://reader.elsevier.com/reader/sd/pii/S0164121220301527?token=BF70D840C31017306FCC3DD74C948734AB4048F078BC9EB4817D35E053867A27A5660E9318116CB3728A054215F8FD9E},
+	urldate = {2021-01-18},
+	langid = {english},
+	doi = {10.1016/j.jss.2020.110708},
+}
+
+@inproceedings{shahrad_architectural_2019,
+	location = {Columbus {OH} {USA}},
+	title = {Architectural Implications of Function-as-a-Service Computing},
+	isbn = {978-1-4503-6938-1},
+	url = {https://dl.acm.org/doi/10.1145/3352460.3358296},
+	doi = {10.1145/3352460.3358296},
+	abstract = {Serverless computing is a rapidly growing cloud application model, popularized by Amazon’s Lambda platform. Serverless cloud services provide fine-grained provisioning of resources, which scale automatically with user demand. Function-as-a-Service ({FaaS}) applications follow this serverless model, with the developer providing their application as a set of functions which are executed in response to a user- or system-generated event. Functions are designed to be short-lived and execute inside containers or virtual machines, introducing a range of system-level overheads. This paper studies the architectural implications of this emerging paradigm. Using the commercial-grade Apache {OpenWhisk} {FaaS} platform on real servers, this work investigates and identifies the architectural implications of {FaaS} serverless computing. The workloads, along with the way that {FaaS} inherently interleaves short functions from many tenants frustrates many of the locality-preserving architectural structures common in modern processors. In particular, we find that: {FaaS} containerization brings up to 20x slowdown compared to native execution, cold-start can be over 10x a short function’s execution time, branch mispredictions per kilo-instruction are 20x higher for short functions, memory bandwidth increases by 6x due to the invocation pattern, and {IPC} decreases by as much as 35\% due to inter-function interference. We open-source {FaaSProfiler}, the {FaaS} testing and profiling platform that we developed for this work.},
+	eventtitle = {{MICRO} '52: The 52nd Annual {IEEE}/{ACM} International Symposium on Microarchitecture},
+	pages = {1063--1075},
+	booktitle = {Proceedings of the 52nd Annual {IEEE}/{ACM} International Symposium on Microarchitecture},
+	publisher = {{ACM}},
+	author = {Shahrad, Mohammad and Balkind, Jonathan and Wentzlaff, David},
+	urldate = {2021-01-18},
+	date = {2019-10-12},
+	langid = {english},
+}
+
+@inproceedings{sewak_winning_2018,
+	title = {Winning in the Era of Serverless Computing and Function as a Service},
+	doi = {10.1109/I2CT.2018.8529465},
+	abstract = {Serverless Computing and Function as a Service ({FaaS}) is gaining traction in cloud-based application architectures used by startups and matured organizations alike. Organizations that are keen to leverage modern technology to gain a disruptive edge, optimal efficiency, advanced agility and save cost are adopting these architectural styles rapidly. Cloud service provider offer and dynamically manages the allocation of machine resources in serverless computing. The serverless architectures allows the developers to focus on business logic exclusively without worrying about preparing the runtime, managing deployment and infrastructure related concerns. {FaaS} may be assumed as a subset of Serverless Computing, in which, instead of coding a full-fledged cloud based application, the developer just writes (often small) functions which are piece of code (in one of the multiple programming languages supported by the platform) dedicated to do a focused, often single task that are invoked by triggers. It offers dynamic allocation and scaling of the resources and innovative trigger based costing model. This paper introduces Serverless Computing, and Function as a Service ({FaaS}), explores its advantages and limitations, options available with popular cloud and Platform as a Service ({PaaS}) providers, and emerging use cases and success stories.},
+	eventtitle = {2018 3rd International Conference for Convergence in Technology (I2CT)},
+	pages = {1--5},
+	booktitle = {2018 3rd International Conference for Convergence in Technology (I2CT)},
+	author = {Sewak, M. and Singh, S.},
+	date = {2018-04},
+	keywords = {Amazon {AWS} Lambda, Apache Open Whisk, Cloud computing, Computer architecture, {FAA}, {FaaS}, Function as a Service, Functions as a Service({FaaS}), Google, Google Cloud Functions, {IBM} Cloud Functions, Microservices, Microsoft Azure Functions, Platform as a Service ({PaaS}), Serverless Computing, Servers, Task analysis, cloud computing, cloud service providers, cloud-based application architectures, full-fledged cloud based application, serverless architectures, serverless computing, service-oriented architecture},
+}
+
+@inproceedings{van_eyk_spec_2017,
+	location = {Las Vegas Nevada},
+	title = {The {SPEC} cloud group's research vision on {FaaS} and serverless architectures},
+	isbn = {978-1-4503-5434-9},
+	url = {https://dl.acm.org/doi/10.1145/3154847.3154848},
+	doi = {10.1145/3154847.3154848},
+	abstract = {Cloud computing enables an entire ecosystem of developing, composing, and providing {IT} services. An emerging class of cloud-based software architectures, serverless, focuses on providing software architects the ability to execute arbitrary functions with small overhead in server management, as Function-as-a-service ({FaaS}). However useful, serverless and {FaaS} suffer from a community problem that faces every emerging technology, which has indeed also hampered cloud computing a decade ago: lack of clear terminology, and scattered vision about the field. In this work, we address this community problem. We clarify the term serverless, by reducing it to cloud functions as programming units, and a model of executing simple and complex (e.g., workflows of) functions with operations managed primarily by the cloud provider. We propose a research vision, where 4 key directions (perspectives) present 17 technical opportunities and challenges.},
+	eventtitle = {Middleware '17: 18th International Middleware Conference},
+	pages = {1--4},
+	booktitle = {Proceedings of the 2nd International Workshop on Serverless Computing},
+	publisher = {{ACM}},
+	author = {van Eyk, Erwin and Iosup, Alexandru and Seif, Simon and Thömmes, Markus},
+	urldate = {2021-01-18},
+	date = {2017-12-11},
+	langid = {english},
+}
+
 @inproceedings{villamizar_infrastructure_2016,
 	title = {Infrastructure Cost Comparison of Running Web Applications in the Cloud Using {AWS} Lambda and Monolithic and Microservice Architectures},
 	doi = {10.1109/CCGrid.2016.37},
@@ -9,17 +559,6 @@
 	author = {Villamizar, M. and Garcés, O. and Ochoa, L. and Castro, H. and Salamanca, L. and Verano, M. and Casallas, R. and Gil, S. and Valencia, C. and Zambrano, A. and Lang, M.},
 	date = {2016-05},
 	keywords = {{AWS} Lambda, {AWS} lambda, Amazon, Amazon Web Services, Cloud computing, Companies, Computer architecture, Internet companies, {LinkedIn}, Logic gates, Netflix, Service-oriented architecture, Time factors, Web applications, Web service, Web services, cloud computing, cloud customer, cloud provider, infrastructure cost comparison, microservice architecture, microservice architecture pattern, microservices, monolithic architecture, scalable applications, service oriented architectures, software architecture, software engineering},
-}
-
-@online{jonas_microservices_2016,
-	title = {Microservices and Teraflops},
-	url = {/post/pywren1/},
-	abstract = {Can {AWS} Lambda be used for scientific computing?},
-	titleaddon = {Eric Jonas},
-	author = {Jonas, Eric},
-	urldate = {2021-01-18},
-	date = {2016-10-25},
-	langid = {english},
 }
 
 @online{noauthor_understanding_2014,
@@ -78,22 +617,13 @@
 	langid = {american},
 }
 
-@online{noauthor_incloud_nodate,
-	title = {{INCLOUD}},
-	url = {https://medium.com/incloud-hq},
-	abstract = {We’ll share our experience building cloud applications — including mobile apps, web-frontends, {IoT} and more!},
-	titleaddon = {{INCLOUD}},
-	urldate = {2021-01-15},
-	langid = {english},
-}
-
 @online{noauthor_using_nodate,
 	title = {Using Amazon {CloudWatch} Alarms - Amazon {CloudWatch}},
 	url = {https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html},
 	urldate = {2021-01-15},
 }
 
-@article{noauthor_amazon_nodate,
+@article{noauthor_amazon_nodate-1,
 	title = {Amazon {ECS} - User Guide for {AWS} Fargate},
 	pages = {395},
 	langid = {english},
@@ -138,7 +668,6 @@
 	urldate = {2021-01-13},
 	langid = {english},
 }
-
 @online{noauthor_metrics_nodate,
 	title = {Metrics},
 	url = {https://k6.io/docs/using-k6/metrics},
@@ -218,7 +747,7 @@
 	urldate = {2021-01-08},
 }
 
-@online{noauthor_sam_nodate-1,
+@online{noauthor_sam_nodate,
 	title = {Sam Newman - Backends For Frontends},
 	url = {https://samnewman.io/patterns/architectural/bff/},
 	urldate = {2021-01-08},
@@ -484,13 +1013,14 @@ https://www.youtube.com/user/{GotoConf}...},
 	url = {https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html},
 	urldate = {2021-01-07},
 }
-@online{noauthor_lambda_nodate,
+
+@online{noauthor_lambda_nodate-2,
 	title = {Lambda concepts - {AWS} Lambda},
 	url = {https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-concepts.html},
 	urldate = {2021-01-07},
 }
 
-@online{noauthor_load_2020,
+@online{noauthor_load_2020-1,
 	title = {Load testing a web application’s serverless backend},
 	url = {https://aws.amazon.com/blogs/compute/load-testing-a-web-applications-serverless-backend/},
 	abstract = {In this post, I discuss focus areas for load testing of serverless applications, and highlight two tools commonly used. I show how to configure Artillery with customized functions, and how to run tests to simulate load on the Ask Around Me application.},
@@ -561,7 +1091,7 @@ https://www.youtube.com/user/{GotoConf}...},
 	urldate = {2021-01-06},
 }
 
-@online{noauthor_aws_nodate,
+@online{noauthor_aws_nodate-3,
 	title = {{AWS} Lambda Cold Start Language Comparisons, 2019 edition ☃️ {\textbar} by Nathan Malishev {\textbar} Level Up Coding},
 	url = {https://levelup.gitconnected.com/aws-lambda-cold-start-language-comparisons-2019-edition-%EF%B8%8F-1946d32a0244},
 	urldate = {2021-01-03},
@@ -578,7 +1108,7 @@ https://www.youtube.com/user/{GotoConf}...},
 	langid = {english},
 }
 
-@online{noauthor_serverless_nodate,
+@online{noauthor_serverless_nodate-1,
 	title = {Serverless Manifesto},
 	url = {https://serverless.com/learn/manifesto/},
 	abstract = {Serverless Manifesto},
@@ -637,7 +1167,6 @@ Google hat das Kubernetes-Projekt 2014 als Open-Source-Projekt zur Verfügung ge
 	note = {{ISSN}: 2325-6605},
 	keywords = {Business, {ClouNS}, Cloud computing, Computer architecture, Containers, {IaaS} service, Interoperability, Standards, business data processing, cloud computing, cloud technology, cloud-native application design principle, cloud-native application reference model, industrial cloud standard, public cloud service provider, vendor lock-in aware enterprise architecture engineering},
 }
-
 @online{noauthor_cncftoc_nodate,
 	title = {cncf/toc},
 	url = {https://github.com/cncf/toc},

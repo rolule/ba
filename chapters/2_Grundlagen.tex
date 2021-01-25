@@ -47,3 +47,43 @@ Container-Orchestrierung beschreibt die Automatisierung der "`Bereitstellung, Ve
 Serverless ist ein Software-Ausführungsmodell, bei dem ein Cloud Anbieter (z.B AWS, Azure, GCP) sich vollständig um die Ausführung einer Anwendung inklusive Konfiguration der zugrundeliegenden Server kümmert. Der Programmierer kann sich daher ausschließlich auf das Schreiben des Codes konzentrieren und muss keine Zeit in das Einstellen und Aufsetzen von Servern investieren. \\
 Dabei wird die Software in einem Stateless-Container, d.h einem Container ohne persistentem Speicher, ausgeführt. Der Cloud-Anbieter stellt dabei die Ressourcen dynamisch bzw. on-demand bereit, d.h die Anwendung wird nur dann ausgeführt, wenn eine diesbezügliche Anfrage eintrifft. Serverless verspricht dadurch eine effizientere Entwicklung und Kosteneinsparungen, da bei den Anbietern nur der tatsächlich laufenden Code abgerechnet wird. In der Regel muss vom Entwickler einer Serverless-Anwendung nur eine einzige Funktion geschrieben werden, weshalb Serverless auch als Function-as-a-Service (FaaS) bezeichnet wird\cite{noauthor_was_2016}. \\
 Da eine Serverless-Funktion nicht dauerhaft ausgeführt wird, muss bei einem eingetretenen Event erst einmal der Anwendungscontainer aufgesetzt werden. Dies wird als "`Cold Start"' bezeichnet und kann sich als Latenz bei der Ausführung der Funktion bemerkbar machen. Ist der Container einmal gestartet kann er von den Cloud-Anbietern vorgehalten werden und bei der nächsten Anfrage schneller reagieren. Dies wird auch als "`Warm Start"' bezeichnet\cite{noauthor_was_2016}. Es gibt einige Techniken, um seine Funktionen möglichst warm zu halten, die auch in dieser Arbeit untersucht werden.
+
+\section{AWS Lambda}
+Die Serverless Anwendung soll auf AWS Lambda ausgeführt werden. Dabei handelt es sich um ein Function-as-a-service Angebot von Amazon AWS.
+
+\subsection{Funktionsweise}
+Die Funktionsweise von Lambda lässt sich wie folgt beschreiben\cite{amazon_aws_aws_2020}:
+
+\begin{enumerate}
+\item Es tritt ein Event ein, dass die Ausführung der Lambda-Funktion anfordert. \\
+    Dabei kann es sich um alle mögliche Ereignisse handeln. Zum Beispiel ein Dateiupload in S3 (AWS Object Store), einen CRON-Job oder im Falle eines Web Backends eine API-Aufruf mittels AWS API-Gateway.
+
+\item Init Phase: Lambda erstellt automatisch eine Ausführungsumgebung (environment). \\
+    Dabei handelt es sich um eine isolierte Umgebung, die für die Ausführung der Lambda- Funktion benötigt wird. Für diese Umgebung lassen sich einige Parameter von Anwender konfigurieren:
+    
+    \begin{enumerate}
+        \item Die Runtime: Dabei handelt es sich um die verwendete Programmiersprache bzw. Framework. Als Optionen bietet Lambda beispielsweise Node.js 12.x, Java, Python oder Go.
+        \item Die Arbeitsspeichergröße: Wie viel Speicher der ausgeführten Funktion bereitsteht. Die Mindestgröße beträgt hier 128MB; maximal sind etwas mehr als 10GB möglich. Proportional zur Speichergröße bestimmt Lambda ebenfalls die CPU Leistung, mit der die Funktion ausgeführt wird.
+        \item Timeout: Die maximale Ausführungszeit der Funktion bevor Lambda sie automatisch beendet. Hier sind maximal 15 Minuten möglich.
+    \end{enumerate}
+    
+    Die Umgebung wird mit den konfigurierten Ressourcen (Speicher, CPU) erstellt, der Code der Funktion geladen und entpackt und der Initialisierungscode der Lambda Funktion (nicht die Funktion an sich) ausgeführt. Dort lässt sich bspw. eine Datenbankverbindung aufbauen.
+    
+\item Invoke Phase: In dieser Phase wird die eigentliche Lambda Funktion, welche auch als Handler bezeichnet wird, ausgeführt. Eventuelle Rückgabewerte werden an den Aufrufer zurückgeliefert. Nachdem der Handler ausgeführt wurde, bleibt er verfügbar für weitere Anfragen. Der Initialisierungscode wird allerdings nicht mehr ausgeführt.
+    
+\item Shutdown Phase: Nachdem die Funktion für einige Zeit nicht mehr angefragt wurde, wird die Ausführungsumgebung wieder freigegeben. 
+\end{enumerate}
+
+\subsection{Cold- und Warmstart}
+Nachdem der Handler in der Invoke-Phase ausgeführt wurde, wird die Ausführungsumgebung nicht sofort wieder freigegeben, sondern für einige Zeit vorgehalten, um weitere Anfragen schneller zu bearbeiten. Dies wird auch als Warmstart bezeichnet, da die Runtime-Umgebung bereits initialisiert ist und der Handler sofort aktiviert werden kann.
+Muss die Umgebung nach einer eingetroffenen Anfrage erst noch initialisiert werden, also erst die Init-Phase ausgeführt werden, wird dies als Coldstart bezeichnet. Aufgrund des Mehraufwandes, erweist sich ein Coldstart als deutlich langsamer als ein Warmstart.
+
+\subsection{Nebenläufigkeit}
+Befindet sich der Handler einer Lambda-Funktion gerade in der Ausführung und es trifft ein weiteres Ereignis ein, startet Lambda zusätzlich zu der bereits laufenden Funktion eine weitere Ausführungsumgebung, um diese neue Anfrage zu verarbeiten. Da nun mehrere Umgebungen gleichzeitig ausgeführt werden, wird dies auch als Nebenläufigkeit (engl. concurrency) bezeichnet. Bei vielen gleichzeitigen Anfragen werden also so viele Umgebungen wie nötig erstellt. Der AWS Lambda Service erlaubt standardmäßig 1000 nebenläufige Funktionen pro AWS Region, dieser Wert lässt sich allerdings nach Absprache mit AWS erhöhen.
+
+Durch die Nebenläufigkeit wird die Stärke von Lambda Funktionen bei der Skalierung deutlich. Gibt es einen Anfragesturm, werden automatisch neue Instanzen aufgesetzt, die diese Bearbeiten können. Bereits initialisierte Umgebungen werden wiederverwendet. Lässt die Anfrage nach, werden Umgebungen automatisch wieder heruntergefahren. 
+
+Allerdings muss für jede neue Umgebung ist ein Coldstart durchgeführt werden der viel Zeit kostet und sich dem Benutzer als deutliche Latenz bemerkbar macht. Und auch für die Ausführungskosten stellen Coldstarts ein Problem dar, denn Lambda-Funktionen werden nach der Ausführungszeit in Millisekunden abgerechnet. Darum gilt es, Coldstarts möglichst zu vermeiden. Beispielsweise lassen sich mit Provisioned Concurrency bereits Funktionen vor-starten, die dann bei Bedarf nicht mehr einen Kaltstart erfordern. Kombiniert mit Autoscaling, das die provisionierte Kapazität an steigende Anfragezahlen anpasst, lässt sich so die Anzahl an Kaltstarts vermindern.
+
+\subsection{Kosten}
+Wie bereits erwähnt, wird die Ausführung von Lambda-Funktionen nach der Ausführungszeit in Millisekunden abgerechnet. Dabei zählt die Zeit eines Cold-Starts mit in die Berechnung ein. Bei der Berechnung zählt aber auch die konfigurierte Arbeitsspeichergröße mit in das Ergebnis ein. Derzeit berechnet AWS in der Region Frankfurt (eu-central-1) Kosten von 0,0000166667 US-Dollar pro GB-Sekunde\cite{noauthor_lambda_nodate}. Zusätzlich müssen pro 1.000.000 Ausführungen im Monat noch einmal 0,20 US-Dollar Anforderungsgebühren gezahlt werden.
