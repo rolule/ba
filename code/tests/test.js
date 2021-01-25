@@ -3,119 +3,171 @@ const prompt = require("prompt");
 const fs = require("fs");
 const { exec } = require("child_process");
 
+// command lint args
+// not using datadog
+let datadog = "--out datadog";
+if (process.argv.includes("--no-datadog")) {
+  datadog = "";
+}
+
+// creating all artifacts in debug folder
+// this is for local testing without adding to git
+let debug = "";
+if (process.argv.includes("--debug")) {
+  debug = "debug/";
+}
+
+// lambda or fargate
+let serviceType = "";
+if (process.argv.includes("--service")) {
+  serviceType = process.argv[process.argv.findIndex((a) => a === "--service") + 1];
+}
+
+// 128, 26, 512, 1024
+let memorySize = "";
+if (process.argv.includes("--memory")) {
+  memorySize = parseInt(process.argv[process.argv.findIndex((a) => a === "--memory") + 1]);
+}
+
+// k6 script file of the use-case
+let useCaseFile = "";
+if (process.argv.includes("--use-case")) {
+  useCaseFile = process.argv[process.argv.findIndex((a) => a === "--use-case") + 1];
+}
+
+// k6 options file
+let strategyFile = "";
+if (process.argv.includes("--strategy")) {
+  strategyFile = process.argv[process.argv.findIndex((a) => a === "--strategy") + 1];
+}
+
+// starts the prompt input
 prompt.start();
 prompt.delimiter = "";
 
+// async function because it is needed for await syntax of prompt
 async function start() {
   // Get API Url
-  prompt.message = "\n1 Lambda\n2 Fargate\n";
-  const { service } = await prompt.get({
-    properties: {
-      service: {
-        pattern: /^(1|2)$/,
-        required: true,
+  if (!serviceType) {
+    prompt.message = "\n1 Lambda\n2 Fargate\n";
+    const { service } = await prompt.get({
+      properties: {
+        service: {
+          pattern: /^(1|2)$/,
+          required: true,
+        },
       },
-    },
-  });
+    });
 
-  const serviceType = service === "1" ? "lambda" : "fargate";
+    serviceType = service === "1" ? "lambda" : "fargate";
+  }
 
   const apiUrl =
-    service === "1"
+    serviceType === "lambda"
       ? "https://6wxqnxn37k.execute-api.eu-central-1.amazonaws.com/dev"
       : "http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com";
 
   // get memory size
-  prompt.message = `1 128MB
-2 256MB
-3 512MB
-4 1024MB
-`;
-  const { memory } = await prompt.get({
-    properties: {
-      memory: {
-        pattern: /^(1|2|3|4)$/,
-        required: true,
+  if (!memorySize) {
+    prompt.message = `1 128MB
+      2 256MB
+      3 512MB
+      4 1024MB
+      `;
+    const { memory } = await prompt.get({
+      properties: {
+        memory: {
+          pattern: /^(1|2|3|4)$/,
+          required: true,
+        },
       },
-    },
-  });
+    });
 
-  let memorySize = 0;
-  switch (memory) {
-    case "1":
-      memorySize = 128;
-      break;
-    case "2":
-      memorySize = 256;
-      break;
-    case "3":
-      memorySize = 512;
-      break;
-    case "4":
-      memorySize = 1024;
-      break;
+    switch (memory) {
+      case "1":
+        memorySize = 128;
+        break;
+      case "2":
+        memorySize = 256;
+        break;
+      case "3":
+        memorySize = 512;
+        break;
+      case "4":
+        memorySize = 1024;
+        break;
+    }
   }
 
   // Get use-case file
-  const useCaseFiles = fs.readdirSync("./use-cases");
-  if (useCaseFiles.length === 0) {
-    console.log("No use-case files found");
-    return;
-  }
+  if (!useCaseFile) {
+    const useCaseFiles = fs.readdirSync("./use-cases");
+    if (useCaseFiles.length === 0) {
+      console.log("No use-case files found");
+      return;
+    }
 
-  prompt.message = useCaseFiles.reduce((s, n, i) => `${s}${i + 1} ${n}\n`, ``);
-  const { useCase } = await prompt.get({
-    properties: {
-      useCase: {
-        pattern: new RegExp(`^[${1}-${useCaseFiles.length}]$`),
-        required: true,
+    prompt.message = useCaseFiles.reduce((s, n, i) => `${s}${i + 1} ${n}\n`, ``);
+    const { useCase } = await prompt.get({
+      properties: {
+        useCase: {
+          pattern: new RegExp(`^[${1}-${useCaseFiles.length}]$`),
+          required: true,
+        },
       },
-    },
-  });
+    });
 
-  const useCaseFile = useCaseFiles[useCase - 1];
+    useCaseFile = `./use-cases/${useCaseFiles[useCase - 1]}`;
+  }
 
   // Get strategy
-  const fileNames = fs.readdirSync("./strategies");
-  if (fileNames.length === 0) {
-    console.log("No strategy files found");
-    return;
-  }
+  if (!strategyFile) {
+    const fileNames = fs.readdirSync("./strategies");
+    if (fileNames.length === 0) {
+      console.log("No strategy files found");
+      return;
+    }
 
-  prompt.message = fileNames.reduce((s, n, i) => `${s}${i + 1} ${n}\n`, ``);
-  const { strategy } = await prompt.get({
-    properties: {
-      strategy: {
-        pattern: new RegExp(`^[${1}-${fileNames.length}]$`),
-        required: true,
+    prompt.message = fileNames.reduce((s, n, i) => `${s}${i + 1} ${n}\n`, ``);
+    const { strategy } = await prompt.get({
+      properties: {
+        strategy: {
+          pattern: new RegExp(`^[${1}-${fileNames.length}]$`),
+          required: true,
+        },
       },
-    },
-  });
+    });
 
-  const strategyFile = fileNames[strategy - 1];
+    strategyFile = `strategies/${fileNames[strategy - 1]}`;
+  }
 
   // summary
   console.log();
-  console.log("RUNNING TEST");
-  console.log(`API_URL: ${apiUrl}`);
+  console.log(`${serviceType.toUpperCase()}: ${apiUrl}`);
   console.log(`Memory: ${memorySize}`);
-  console.log(`Use Case: use-cases/${useCaseFile}`);
-  console.log(`Strategy: strategies/${strategyFile}`);
+  console.log(`Use Case: ${useCaseFile}`);
+  console.log(`Strategy: ${strategyFile}`);
 
-  const useCaseName = useCaseFile.replace(".js", "");
-  const strategyName = strategyFile.replace(".json", "");
+  // get file name of use case
+  const useCasePathSplit = useCaseFile.split("/");
+  const useCaseName = useCasePathSplit[useCasePathSplit.length - 1].replace(".js", "");
 
-  // create folder
-  const testFolder = `./${serviceType}/${useCaseName}/${memorySize}/${strategyName}`;
-  if (!fs.existsSync(testFolder)) {
-    fs.mkdirSync(testFolder, { recursive: true });
+  // get file name of strategy
+  const strategyPathSplit = strategyFile.split("/");
+  const strategyName = strategyPathSplit[strategyPathSplit.length - 1].replace(".json", "");
+
+  // create artifact ouput folder
+  const outputFolder = `./${debug}${serviceType}/${useCaseName}/${memorySize}/${strategyName}`;
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true });
   }
 
   // run test
-  const outputFile = `${testFolder}/${format(new Date(), "MMdd-kkmm")}`;
-
+  const outputFile = `${outputFolder}/${format(new Date(), "MMdd-kkmm")}`;
+  console.log(`Output: ${outputFile}.csv`);
+  console.log(`Datadog: ${datadog ? "yes" : "no"}`);
   exec(
-    `k6 run use-cases/${useCaseFile} --config strategies/${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv"`,
+    `k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog}`,
     (error, stdout, stderr) => {
       if (error) {
         console.log(`ERROR: ${error}`);
@@ -134,6 +186,29 @@ async function start() {
           console.log(stdout);
         }
       });
+
+      // git add ouput folder if it exists and commit
+      if (fs.existsSync(outputFolder)) {
+        exec(
+          `git add ${outputFolder} && git commit -m "Add test: ${serviceType.toUpperCase()} ${memorySize}MB UC-${
+            useCaseName.toUpperCase
+          } ${strategyName}"`,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.log(`ERROR: ${error}`);
+              return;
+            }
+            if (stderr) {
+              console.log(`STDERR: ${stderr}`);
+              return;
+            }
+
+            console.log(stdout);
+          }
+        );
+      } else {
+        console.log("Did not add anything to git");
+      }
     }
   );
 }
