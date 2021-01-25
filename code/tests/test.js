@@ -230,7 +230,7 @@ async function start() {
   - val: ${metrics.vus.value}`);
 
       // git add ouput folder if it exists and commit
-      if (fs.existsSync(outputFolder)) {
+      if (fs.existsSync(outputFolder) && !debug) {
         exec(
           `git add ${outputFolder} && git commit -m "Add test: ${serviceType.toUpperCase()} ${memorySize}MB UC-${
             useCaseName.toUpperCase
