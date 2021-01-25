@@ -43,7 +43,7 @@ if (process.argv.includes("--strategy")) {
 }
 
 const formatDE = (date, formatStr = "PP") => {
-  return format(date, formatStr, { locale: de });
+  return format(date, formatStr, { locale: de, timeZone: "Europe/Berlin" });
 };
 
 // starts the prompt input
@@ -77,7 +77,8 @@ async function start() {
     prompt.message = `1 128MB
 2 256MB
 3 512MB
-4 1024MB`;
+4 1024MB
+`;
     const { memory } = await prompt.get({
       properties: {
         memory: {
