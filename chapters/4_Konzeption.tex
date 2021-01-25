@@ -84,7 +84,6 @@ Da k6 keine eingebaute Visualisierungslösung bietet, werden diese Werte mittels
 Abbildung \ref{fig:test-architecture} zeigt das vollständige Setup der mit der Testing-Architektur.
 
 Für zusätzliche Analysen und Vergleiche mehrerer Test-Ausführungen untereinander, werden die Ergebnisse jedes k6-Tests auch als CSV-Text-Datei exportiert. Im Anschluss können diese Dateien mit dem Data-Science Framework Pandas\cite{noauthor_pandas_nodate} für die Programmiersprache Python analysiert und verglichen werden. Der Source-Code der Analysen und die Ergebnis-Artefakte der Tests sind im Code-Repository dieser Arbeit zu finden.
-
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{img/platzhalter.png}
     \caption[Test Architektur der Notiz-Anwendung]{Test Architektur der Notiz-Anwendung}
@@ -140,10 +139,10 @@ Die folgenden Use-Cases werden bei der Analyse der Systems-under-test evaluiert.
     \item (Minimiertes JavaScript)
 \end{itemize}
 
+
 Es ergeben sich dadurch folgende Test-Szenarien:
 
 CPU 128 / 256 / 512 für Use-Case A / B / C mit Instanzen 1 / 2 / 3 
-
 
 \subsection{Test-Ablauf}
 Nach Molyneaux \cite{molyneaux_art_2014} sollte zunächst ein Pipe-clean Test durchgeführt werden. Dabei wird jedes System von nur einem einzigen Benutzer für ein bestimmtes Szenario angefragt. Dadurch lassen sich Basiswerte für die betrachteten Metriken ableiten, welche in späteren Tests zu Vergleichen hinzugezogen werden können.
