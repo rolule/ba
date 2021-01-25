@@ -1,5 +1,5 @@
 export const randomTimeout = (onResolve) => {
-  const randomTime = 2000;
+  const randomTime = 50;
 
   return new Promise((resolve, reject) =>
     setTimeout(() => {

@@ -18,7 +18,8 @@
     "serverless-offline": "^5.3.3"
   },
   "dependencies": {
-    "aws-sdk": "^2.824.0"
+    "aws-sdk": "^2.824.0",
+    "serverless-plugin-datadog": "^2.13.0"
   },
   "type": "module"
 }
