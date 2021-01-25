@@ -1,4 +1,5 @@
 const { format, add, formatDistanceToNow } = require("date-fns");
+const { de } = require("date-fns/locale");
 const prompt = require("prompt");
 const fs = require("fs");
 const { exec } = require("child_process");
@@ -41,6 +42,10 @@ if (process.argv.includes("--strategy")) {
   strategyFile = process.argv[process.argv.findIndex((a) => a === "--strategy") + 1];
 }
 
+const formatDE = (date, formatStr = "PP") => {
+  return format(date, formatStr, { locale: de });
+};
+
 // starts the prompt input
 prompt.start();
 prompt.delimiter = "";
@@ -70,10 +75,9 @@ async function start() {
   // get memory size
   if (!memorySize) {
     prompt.message = `1 128MB
-      2 256MB
-      3 512MB
-      4 1024MB
-      `;
+2 256MB
+3 512MB
+4 1024MB`;
     const { memory } = await prompt.get({
       properties: {
         memory: {
@@ -186,12 +190,12 @@ async function start() {
   }
 
   // run test
-  const outputFile = `${outputFolder}/${format(new Date(), "MMdd-kkmm")}`;
+  const outputFile = `${outputFolder}/${formatDE(new Date(), "MMdd-kkmm")}`;
   console.log(`Output: ${outputFile}.csv`);
   console.log(`Datadog: ${datadog ? "yes" : "no"}`);
   const endDate = add(new Date(), { seconds: totalSeconds });
   console.log(`Expected dur: ${formatDistanceToNow(endDate)}`);
-  console.log(`Expected end: ${format(endDate, "kk:mm")}`);
+  console.log(`Expected end: ${formatDE(endDate, "kk:mm")}`);
   console.log();
 
   exec(
