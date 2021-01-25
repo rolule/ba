@@ -167,7 +167,7 @@ async function start() {
   console.log(`Output: ${outputFile}.csv`);
   console.log(`Datadog: ${datadog ? "yes" : "no"}`);
   exec(
-    `k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog}`,
+    `k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`,
     (error, stdout, stderr) => {
       if (error) {
         console.log(`ERROR: ${error}`);
@@ -178,14 +178,28 @@ async function start() {
         return;
       }
 
-      // write output file
-      console.log("Done. Saving summary...");
-      fs.writeFileSync(`${outputFile}.json`, stdout, (err) => {
-        if (err) {
-          console.error("There was an error saving k6 summary. Please save this manually:");
-          console.log(stdout);
-        }
-      });
+      // rounds two decimal places
+      const round = (num) => {
+        return (Math.round(num * 100) / 100).toFixed(2);
+      };
+
+      // print k6 summary
+      // console.log(stdout);
+      const { metrics } = JSON.parse(fs.readFileSync(`${outputFile}.json`));
+      const { http_reqs: requests } = metrics;
+      console.log(`Total requests  : ${requests.count}`);
+      console.log(`Avg request rate: ${round(requests.rate)}/s`);
+
+      const { http_req_duration: duration } = metrics;
+      console.log(`Duration
+  - med: ${round(duration.med)}ms
+  - min: ${round(duration.min)}ms
+  - max: ${round(duration.max)}ms`);
+
+      console.log(`VUs
+  - min: ${metrics.vus.min}
+  - max: ${metrics.vus.max}
+  - val: ${metrics.vus.value}`);
 
       // git add ouput folder if it exists and commit
       if (fs.existsSync(outputFolder)) {
