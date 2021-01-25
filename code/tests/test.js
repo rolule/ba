@@ -1,4 +1,4 @@
-const { format } = require("date-fns");
+const { format, add, formatDistanceToNow } = require("date-fns");
 const prompt = require("prompt");
 const fs = require("fs");
 const { exec } = require("child_process");
@@ -148,6 +148,29 @@ async function start() {
   console.log(`Use Case: ${useCaseFile}`);
   console.log(`Strategy: ${strategyFile}`);
 
+  // log strategy
+  const { stages } = JSON.parse(fs.readFileSync(strategyFile));
+  let totalSeconds = 0;
+  stages.forEach(({ duration, target }, i) => {
+    console.log(`  ${i + 1}: ${duration} -> ${target} VUs`);
+
+    // parse duration into seconds
+    const hoursMatch = /([0-9]+)h/.exec(duration);
+    if (hoursMatch) {
+      totalSeconds += parseInt(hoursMatch.match) * 3600;
+    }
+
+    const minutesMatch = /([0-9]+)m/.exec(duration);
+    if (minutesMatch) {
+      totalSeconds += parseInt(minutesMatch[1]) * 60;
+    }
+
+    const secondMatch = /([0-9]+)s/.exec(duration);
+    if (secondMatch) {
+      totalSeconds += parseInt(secondMatch[1]);
+    }
+  });
+
   // get file name of use case
   const useCasePathSplit = useCaseFile.split("/");
   const useCaseName = useCasePathSplit[useCasePathSplit.length - 1].replace(".js", "");
@@ -166,6 +189,11 @@ async function start() {
   const outputFile = `${outputFolder}/${format(new Date(), "MMdd-kkmm")}`;
   console.log(`Output: ${outputFile}.csv`);
   console.log(`Datadog: ${datadog ? "yes" : "no"}`);
+  const endDate = add(new Date(), { seconds: totalSeconds });
+  console.log(`Expected dur: ${formatDistanceToNow(endDate)}`);
+  console.log(`Expected end: ${format(endDate, "kk:mm")}`);
+  console.log();
+
   exec(
     `k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`,
     (error, stdout, stderr) => {
