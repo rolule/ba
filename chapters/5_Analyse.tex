@@ -28,3 +28,70 @@ u   req     fails   p-rps   p-rpm   avg-ms  p95-ms  p99-ms  min-ms  max     mu  
 Fargate 256cpu 512mb 1task stress:
 req     fails   peak-rps    peak-rpm    avg-ms  p95-ms  p99-ms  min     max     cpu
 880788  0       1982        109000      17-98   19-101  60-154  7-89    151-237 100
+
+Zu untersuchende Aspekte:
+1. Wie ist die Performance bei normalem Load oder bei Spike Load?
+    H1: Bei Container kein Unterschied, bei Lambda enormer Unterschied
+    -> Load Test
+    -> Spike Test
+    
+2. Wie viele Benutzer kann ein Container abdecken bevor die Performance degradiert?
+    -> Stress Test
+3. Wie ändert sich die Performance bei der Verwendung mehrerer Container Instanzen (Tasks)?
+    H2: Doppelt so viele Requests können verarbeitet werden
+4. Wie verändert sich die Performance bei einem Use-Case mit mehreren Endpunkten?
+    H3: Bei Container kein Unterschied, bei Lambda enormer Unterschied (ähnlich H1)
+5. Wie verändert sich die Performance bei größerer CPU und RAM?
+
+
+
+Tests
+- 128MB Konfiguration
+    - Use-Case A
+        1. Pipe-Clean
+            Lambda
+            1 Task -> Annahme: Performance ist für 2 Tasks gleich
+        2. Stress Test Container: Wie viele VUs
+            1 Task
+            2 Tasks
+            Lambda: Zum Vergleich
+        3. Load Test: wie ist die Response-Time
+            Lambda
+            1 Task
+            2 Tasks
+        4. Spike Test
+            Lambda
+            1 Task
+            2 Tasks
+            
+    - Use-Case B -> Vergleich der Performance für Use-Case mit mehreren Endpunkten
+        1. Pipe-Clean
+            Lambda
+            1 Task
+        2. Load Test -> Vergleichen mit Use-Case A
+            Lambda
+            1 Task
+            2 Tasks
+        3. Spike Test -> Vergleichen mit Use-Case A
+            Lambda
+            1 Task
+            2 Tasks
+        
+    - Use-Case C -> Vergleich der Performance für Use-Case mit mehreren Endpunkten
+        1. Pipe-Clean
+            Lambda
+            1 Task
+        2. Load Test -> Vergleichen mit Use-Case A und B
+            Lambda
+            1 Task
+            2 Task
+        3. Spike Test -> -> Vergleichen mit Use-Case A und B
+            Lambda
+            1 Task
+            2 Task
+            
+    => Auswertung
+        1. Vergleich 
+    
+    
+- 256 MB Konfiguration -> Vergleich Performance mit mehr CPU/RAM
