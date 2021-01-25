@@ -237,9 +237,7 @@ async function start() {
       // git add ouput folder if it exists and commit
       if (fs.existsSync(outputFolder) && !debug) {
         exec(
-          `git add ${outputFolder} && git commit -m "Add test: ${serviceType.toUpperCase()} ${memorySize}MB UC-${
-            useCaseName.toUpperCase
-          } ${strategyName}"`,
+          `git add ${outputFolder} && git commit -m "Add test: ${serviceType.toUpperCase()} ${memorySize}MB UC-${useCaseName.toUpperCase()} ${strategyName}"`,
           (error, stdout, stderr) => {
             if (error) {
               console.log(`ERROR: ${error}`);
