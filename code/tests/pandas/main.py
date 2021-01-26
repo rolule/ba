@@ -34,16 +34,20 @@ tables = [table[["time", "metric_value"]] for table in tables]
 tables = [table.rename(columns={"metric_value": name}) for table, name in zip(tables, names)]
 
 # merge all tables together
-merge = tables[0]
+col1Medians = tables[0].groupby("time").median().reset_index()
+merge = col1Medians
 for i in range(1, len(tables)):
-    merge = pd.merge(merge, tables[i], how="left", on="time")
+    merge = pd.merge(merge, tables[i].groupby("time").median(), how="left", on="time")
+
+col1Maxs = tables[0].groupby("time").max().reset_index().rename(columns={names[0]: f'{names[0]}-max'})
+merge = pd.merge(merge, col1Maxs, how="left", on="time")
 
 # set time column to be the index
 merge = merge.set_index("time")
 print(merge.describe())
 
 # plot merged table
-merge.plot()
+merge.plot(kind="line")
 plt.xlabel("Zeit (s)")
 plt.ylabel("Response Time (ms)")
 plt.show()
