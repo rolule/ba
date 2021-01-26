@@ -1,12 +1,10 @@
-const { format, add, formatDistanceToNow } = require("date-fns");
-const { de } = require("date-fns/locale");
 const prompt = require("prompt");
 const fs = require("fs");
-const { exec } = require("child_process");
-const { memory } = require("console");
 const yaml = require("js-yaml");
+const { format, add, formatDistanceToNow } = require("date-fns");
+const { de } = require("date-fns/locale");
+const { exec } = require("child_process");
 const { exit } = require("process");
-const { config } = require("winston");
 
 // command lint args
 // confg file path
@@ -63,9 +61,9 @@ const formatDE = (date, formatStr = "PP") => {
 };
 
 // open config file
-let settings;
+let config;
 try {
-  settings = yaml.load(fs.readFileSync(configFile, "utf8"));
+  config = yaml.load(fs.readFileSync(configFile, "utf8"));
 } catch (e) {
   console.log(
     "Config file not found! Please provide a config.yaml file in this folder or use --config to specify the path."
@@ -94,7 +92,7 @@ async function start() {
     serviceType = service === "1" ? "lambda" : "fargate";
   }
 
-  const apiUrl = serviceType === "lambda" ? settings.lambda : settings.fargate;
+  const apiUrl = serviceType === "lambda" ? config.lambda : config.fargate;
 
   // get memory size
   if (!memorySize) {
