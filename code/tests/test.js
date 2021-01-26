@@ -3,6 +3,7 @@ const { de } = require("date-fns/locale");
 const prompt = require("prompt");
 const fs = require("fs");
 const { exec } = require("child_process");
+const { memory } = require("console");
 
 // command lint args
 // not using datadog
@@ -28,6 +29,12 @@ if (process.argv.includes("--service")) {
 let memorySize = "";
 if (process.argv.includes("--memory")) {
   memorySize = parseInt(process.argv[process.argv.findIndex((a) => a === "--memory") + 1]);
+}
+
+// Task count
+let taskCount = "";
+if (process.argv.includes("--memory")) {
+  taskCount = parseInt(process.argv[process.argv.findIndex((a) => a === "--tasks") + 1]);
 }
 
 // k6 script file of the use-case
@@ -102,6 +109,21 @@ async function start() {
         memorySize = 1024;
         break;
     }
+  }
+
+  // get task count
+  if (serviceType === "fargate" && !taskCount) {
+    prompt.message = `How many Fargate Tasks?\n`;
+    const { tasks } = await prompt.get({
+      properties: {
+        tasks: {
+          pattern: /^[1-9]+$/,
+          required: true,
+        },
+      },
+    });
+
+    taskCount = parseInt(tasks);
   }
 
   // Get use-case file
@@ -185,7 +207,8 @@ async function start() {
   const strategyName = strategyPathSplit[strategyPathSplit.length - 1].replace(".json", "");
 
   // create artifact ouput folder
-  const outputFolder = `./${debug}${serviceType}/${useCaseName}/${memorySize}/${strategyName}`;
+  const totalTaskMemory = taskCount !== 1 ? taskCount + "x" + memorySize : memorySize;
+  const outputFolder = `./${debug}${serviceType}/${useCaseName}/${totalTaskMemory}/${strategyName}`;
   if (!fs.existsSync(outputFolder)) {
     fs.mkdirSync(outputFolder, { recursive: true });
   }
@@ -227,7 +250,10 @@ async function start() {
       console.log(`Duration
   - med: ${round(duration.med)}ms
   - min: ${round(duration.min)}ms
-  - max: ${round(duration.max)}ms`);
+  - max: ${round(duration.max)}ms
+  - avg: ${round(duration.avg)}ms
+  - p90: ${round(duration["p(90)"])}ms
+  - p95: ${round(duration["p(95)"])}ms`);
 
       console.log(`VUs
   - min: ${metrics.vus.min}
@@ -236,22 +262,18 @@ async function start() {
 
       // git add ouput folder if it exists and commit
       if (fs.existsSync(outputFolder) && !debug) {
-        console.log(
-          `Add test: ${serviceType.toUpperCase()} ${memorySize}MB UC-${useCaseName.toUpperCase()} ${strategyName}`
-        );
-        exec(
-          `git add ${outputFolder} && git commit -m "Add test: ${serviceType.toUpperCase()} ${memorySize}MB UC-${useCaseName.toUpperCase()} ${strategyName}"`,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.log(`ERROR: ${error}`);
-              return;
-            }
-            if (stderr) {
-              console.log(`STDERR: ${stderr}`);
-              return;
-            }
+        const commitMsg = `Add test: ${serviceType.toUpperCase()} ${totalTaskMemory}MB UC-${useCaseName.toUpperCase()} ${strategyName}`;
+        console.log(commitMsg);
+        exec(`git add ${outputFolder} && git commit -m "${commitMsg}"`, (error, stdout, stderr) => {
+          if (error) {
+            console.log(`ERROR: ${error}`);
+            return;
           }
-        );
+          if (stderr) {
+            console.log(`STDERR: ${stderr}`);
+            return;
+          }
+        });
       } else {
         console.log("Did not add anything to git");
       }
