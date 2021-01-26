@@ -4,8 +4,17 @@ const prompt = require("prompt");
 const fs = require("fs");
 const { exec } = require("child_process");
 const { memory } = require("console");
+const yaml = require("js-yaml");
+const { exit } = require("process");
+const { config } = require("winston");
 
 // command lint args
+// confg file path
+let configFile = "config.yaml";
+if (process.argv.includes("--config")) {
+  configFile = process.argv[process.argv.findIndex((a) => a === "--config") + 1];
+}
+
 // not using datadog
 let datadog = "--out datadog";
 if (process.argv.includes("--no-datadog")) {
@@ -53,6 +62,18 @@ const formatDE = (date, formatStr = "PP") => {
   return format(date, formatStr, { locale: de, timeZone: "Europe/Berlin" });
 };
 
+// open config file
+let settings;
+try {
+  settings = yaml.load(fs.readFileSync(configFile, "utf8"));
+  console.log(settings.lambda);
+} catch (e) {
+  console.log(
+    "Config file not found! Please provide a config.yaml file in this folder or use --config to specify the path."
+  );
+  exit(-1);
+}
+
 // starts the prompt input
 prompt.start();
 prompt.delimiter = "";
@@ -74,10 +95,7 @@ async function start() {
     serviceType = service === "1" ? "lambda" : "fargate";
   }
 
-  const apiUrl =
-    serviceType === "lambda"
-      ? "https://6wxqnxn37k.execute-api.eu-central-1.amazonaws.com/dev"
-      : "http://ec2co-ecsel-14dnyt6ihjqi3-1173665240.eu-central-1.elb.amazonaws.com";
+  const apiUrl = serviceType === "lambda" ? settings.lambda : settings.fargate;
 
   // get memory size
   if (!memorySize) {
