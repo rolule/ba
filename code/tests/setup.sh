@@ -33,3 +33,8 @@ python3 -m venv ba/pandas/venv
 source ba/pandas/venv/bin/activate
 pip install pip --upgrade
 pip install pandas matplotlib openpyxl
+
+# setup correct timezone
+# sudo echo 'ZONE="Europe/Berlin"
+# UTC=true' | sudo tee /etc/sysconfig/clock
+# sudo ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
