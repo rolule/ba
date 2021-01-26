@@ -2,10 +2,16 @@
 # run this on your ECS instance
 
 sudo yum update -y
-sudo yum install -y k6 git
+sudo yum install -y git
 
 # clone this repo
 git clone https://github.com/rolule/ba.git
+
+# install k6
+wget https://bintray.com/loadimpact/rpm/rpm -O bintray-loadimpact-rpm.repo
+sudo mv bintray-loadimpact-rpm.repo /etc/yum.repos.d/
+sudo yum install -y k6
+
 
 # install docker
 sudo amazon-linux-extras install -y docker
