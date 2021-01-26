@@ -1,8 +1,12 @@
 #!/bin/bash
 # run this on your ECS instance
 
+# update
 sudo yum update -y
+
+# install git
 sudo yum install -y git
+git config --global pull.rebase true
 
 # clone this repo
 git clone https://github.com/rolule/ba.git
