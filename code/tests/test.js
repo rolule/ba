@@ -66,7 +66,6 @@ const formatDE = (date, formatStr = "PP") => {
 let settings;
 try {
   settings = yaml.load(fs.readFileSync(configFile, "utf8"));
-  console.log(settings.lambda);
 } catch (e) {
   console.log(
     "Config file not found! Please provide a config.yaml file in this folder or use --config to specify the path."
