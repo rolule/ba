@@ -1,6 +1,7 @@
 const express = require("express");
 var bodyParser = require("body-parser");
 
+// does a timeout for 50ms
 const randomTimeout = (onResolve) => {
   const randomTime = 50;
 
@@ -11,6 +12,7 @@ const randomTimeout = (onResolve) => {
   );
 };
 
+// dummy data
 const notes = [
   {
     id: 1,
@@ -39,9 +41,11 @@ const notes = [
   },
 ];
 
+// create server and use body parser middleware to access the request body
 const app = express();
 app.use(bodyParser.json());
 
+// the port this app runs on in the container
 const port = 80;
 
 // get all notes
@@ -56,7 +60,6 @@ app.get("/notes/:id", async (req, res) => {
 
   await randomTimeout();
   const note = notes.find((note) => note.id == id);
-  console.log(note);
 
   if (!note) {
     return res.send("Note could not be found");
@@ -79,7 +82,6 @@ app.put("/notes/:id", async (req, res) => {
 
 // create note
 app.post("/notes/", async (req, res) => {
-  const { id } = req.params;
   const noteToCreate = req.body;
 
   // create item in database
@@ -89,6 +91,7 @@ app.post("/notes/", async (req, res) => {
   res.send(createdNote);
 });
 
+// server
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Notes express server running on http://localhost:${port}`);
 });
