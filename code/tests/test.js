@@ -222,7 +222,7 @@ async function start() {
   const strategyName = strategyPathSplit[strategyPathSplit.length - 1].replace(".json", "");
 
   // create artifact ouput folder
-  const totalTaskMemory = taskCount !== 1 ? taskCount + "x" + memorySize : memorySize;
+  const totalTaskMemory = taskCount !== 1 && serviceType === "fargate" ? taskCount + "x" + memorySize : memorySize;
   const outputFolder = `./${debug}${serviceType}/${useCaseName}/${totalTaskMemory}/${strategyName}`;
   if (!fs.existsSync(outputFolder)) {
     fs.mkdirSync(outputFolder, { recursive: true });
