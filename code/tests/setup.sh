@@ -45,6 +45,5 @@ pip install pip --upgrade
 pip install pandas matplotlib openpyxl
 
 # setup correct timezone
-# sudo echo 'ZONE="Europe/Berlin"
-# UTC=true' | sudo tee /etc/sysconfig/clock
-# sudo ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+sudo echo -e 'ZONE="Europe/Berlin"\nUTC=true' | sudo tee /etc/sysconfig/clock
+sudo ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
