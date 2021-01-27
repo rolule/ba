@@ -3,6 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 
 import pandas as pd
+from utils import path_to_name
 
 # columns
 # metric_name | timestamp | metric_value | check | error | error_code | group | method | name | proto | scenario |
@@ -13,7 +14,7 @@ import pandas as pd
 # data_sent, data_received, iteration_duration, iterations, vus, max_vus
 
 if len(sys.argv) <= 1:
-    exit("You need to provide the path to the folder.")
+    exit("You need to provide the path to the file or folder(s).")
 
 # read csv result files or folders from stdin
 paths = sys.argv[1:]
@@ -48,7 +49,7 @@ for path, concat in concats.items():
     concats[path] = concats[path][concats[path]["metric_name"] == "http_req_duration"]
 
     # only show metric value
-    concats[path] = concats[path]["metric_value"].rename(path)
+    concats[path] = concats[path]["metric_value"].rename(path_to_name(path))
 
     print(f'Path {path}')
     print(round(concats[path].describe(), 2))
@@ -59,6 +60,6 @@ for path, concat in concats.items():
 if len(paths) == 2:
     compare = pd.concat([concat.reset_index(drop=True) for concat in concats.values()], axis=1)
     print("Compared summary")
-    print(compare.describe())
+    print(round(compare.describe(), 2))
     compare.plot(kind="box")
     plt.show()
