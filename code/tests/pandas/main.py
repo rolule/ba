@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import sys
 
 # columns
 # metric_name | timestamp | metric_value | check | error | error_code | group | method | name | proto | scenario |
@@ -9,13 +10,11 @@ import pandas as pd
 # http_reqs, http_req_duration, http_req_blocked, http_req_connecting_ http_req_tls_handshaking, http_req_receiving,
 # data_sent, data_received, iteration_duration, iterations, vus, max_vus
 
-
-# csv result files
-files = ['../debug/fargate/a/128/light-load/0126-1236.csv', '../debug/fargate/a/128/test/0125-1704.csv',
-         '../debug/fargate/a/128/test/0125-1711.csv']
+# read csv result files from args
+files = sys.argv[1:]
 
 # names of the plot graphs
-names = ["Fargate 1", "Fargate 2", "Fargate 3"]
+names = files
 
 # read files
 tables = [pd.read_csv(file) for file in files]
