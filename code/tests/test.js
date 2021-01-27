@@ -229,7 +229,8 @@ async function start() {
   }
 
   // run test
-  const outputFile = `${outputFolder}/${formatDE(new Date(), "MMdd-kkmm")}`;
+  const fileName = formatDE(new Date(), "MMdd-kkmm");
+  const outputFile = `${outputFolder}/${fileName}`;
   console.log(`Output: ${outputFile}.csv`);
   console.log(`Datadog: ${datadog ? "yes" : "no"}`);
   const endDate = add(new Date(), { seconds: totalSeconds });
@@ -275,23 +276,41 @@ async function start() {
   - max: ${metrics.vus.max}
   - val: ${metrics.vus.value}`);
 
-      // git add ouput folder if it exists and commit
-      if (fs.existsSync(outputFolder) && !debug) {
-        const commitMsg = `Add test: ${serviceType.toUpperCase()} ${totalTaskMemory}MB UC-${useCaseName.toUpperCase()} ${strategyName}`;
-        console.log(commitMsg);
-        exec(`git add ${outputFolder} && git commit -m "${commitMsg}"`, (error, stdout, stderr) => {
+      // create tar.gz archive of output files and go back in tests directory
+      const tarArchiveName = `${fileName}.tar.gz`;
+      const tarArchivePath = `${outputFolder}/${tarArchiveName}`;
+      exec(
+        `cd ${outputFolder} && tar cfz ${tarArchiveName} ${fileName}.csv ${fileName}.json && cd -`,
+        (error, stdout, stderr) => {
           if (error) {
-            console.log(`ERROR: ${error}`);
+            console.log(error);
             return;
           }
+
           if (stderr) {
-            console.log(`STDERR: ${stderr}`);
+            console.log(stderr);
             return;
           }
-        });
-      } else {
-        console.log("Did not add anything to git");
-      }
+
+          // git add ouput folder if it exists and commit
+          if (fs.existsSync(outputFolder) && !debug) {
+            const commitMsg = `Add test: ${serviceType.toUpperCase()} ${totalTaskMemory}MB UC-${useCaseName.toUpperCase()} ${strategyName}`;
+            console.log(commitMsg);
+            exec(`git add ${tarArchivePath} && git commit -m "${commitMsg}"`, (error, stdout, stderr) => {
+              if (error) {
+                console.log(`ERROR: ${error}`);
+                return;
+              }
+              if (stderr) {
+                console.log(`STDERR: ${stderr}`);
+                return;
+              }
+            });
+          } else {
+            console.log("Did not add anything to git");
+          }
+        }
+      );
     }
   );
 }
