@@ -1,4 +1,7 @@
 node_modules/
 debug/
 connect
-*.csv
+fargate/**/*.json
+lambda/**/*.json
+fargate/**/*.csv
+lambda/**/*.csv
