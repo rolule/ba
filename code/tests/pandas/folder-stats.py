@@ -1,5 +1,6 @@
 import os
 import sys
+import matplotlib.pyplot as plt
 
 import pandas as pd
 
@@ -47,9 +48,17 @@ for path, concat in concats.items():
     concats[path] = concats[path][concats[path]["metric_name"] == "http_req_duration"]
 
     # only show metric value
-    concats[path] = concats[path]["metric_value"]
+    concats[path] = concats[path]["metric_value"].rename(path)
 
     print(f'Path {path}')
     print(round(concats[path].describe(), 2))
     print(round(concats[path].quantile(q=[0.9, 0.95]), 2))
     print()
+
+# show plot of both folders
+if len(paths) == 2:
+    compare = pd.concat([concat.reset_index(drop=True) for concat in concats.values()], axis=1)
+    print("Compared summary")
+    print(compare.describe())
+    compare.plot(kind="box")
+    plt.show()
