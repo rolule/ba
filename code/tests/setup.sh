@@ -39,8 +39,8 @@ npm install
 sudo yum install -y python3
 
 # create venv and install packages for analysis
-python3 -m venv ba/pandas/venv
-source ba/pandas/venv/bin/activate
+python3 -m venv pandas/venv
+source pandas/venv/bin/activate
 pip install pip --upgrade
 pip install pandas matplotlib openpyxl
 
