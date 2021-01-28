@@ -1,0 +1,33 @@
+{
+  "stages": [
+    { "duration": "2m", "target": 60 },
+    { "duration": "2m", "target": 60 },
+
+    { "duration": "2m", "target": 120 },
+    { "duration": "2m", "target": 120 },
+
+    { "duration": "2m", "target": 180 },
+    { "duration": "2m", "target": 180 },
+
+    { "duration": "2m", "target": 240 },
+    { "duration": "2m", "target": 240 },
+
+    { "duration": "2m", "target": 300 },
+    { "duration": "2m", "target": 300 },
+
+    { "duration": "2m", "target": 360 },
+    { "duration": "2m", "target": 360 },
+
+    { "duration": "2m", "target": 420 },
+    { "duration": "2m", "target": 420 },
+
+    { "duration": "2m", "target": 480 },
+    { "duration": "2m", "target": 480 },
+
+    { "duration": "2m", "target": 540 },
+    { "duration": "2m", "target": 540 },
+
+    { "duration": "2m", "target": 600 },
+    { "duration": "2m", "target": 600 }
+  ]
+}
