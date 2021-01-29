@@ -3,6 +3,7 @@ import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from utils import path_to_name
 
 
 # columns
@@ -33,32 +34,49 @@ for path, table in tables.items():
     # create time column
     table["time"] = table["timestamp"] - table["timestamp"][0]
 
-    # filter for request duration metric
-    table = table[table["metric_name"] == "vus"]
+    # filter for vus metric
+    vus = table[table["metric_name"] == "vus"]
 
     # only show time and metric value
-    table = table[["time", "metric_value"]]
+    vus = vus[["time", "metric_value"]]
 
     # rename metric_value column to supplied name
-    table = table.rename(columns={"metric_value": "VUs"})
+    vus = vus.rename(columns={"metric_value": "VUs"})
 
-    # add table grouped by median to merge table
-    median_table = table.groupby("time").median().reset_index()
-    # max_table = table.groupby("time").max().reset_index().rename(columns={names[path]: f'{names[path]}-max'})
+    # filter for request duration metric
+    reqd = table[table["metric_name"] == "http_req_duration"]
+
+    # only show time and metric value
+    reqd = reqd[["time", "metric_value"]]
+
+    # group req_duration by max
+    reqd_max = reqd.rename(columns={"metric_value": path_to_name(path) + "-max"}).groupby("time").max().reset_index()
+    reqd_med = reqd.rename(columns={"metric_value": path_to_name(path) + "-min"}).groupby("time").min().reset_index()
+
+    # rename metric_value column to supplied name
+    reqd = reqd.rename(columns={"metric_value": path_to_name(path)})
+
+    # groupe req_duration by median
+    reqd = reqd.groupby("time").median().reset_index()
+
+    # merge tables
     if len(merge) == 0:
-        merge = median_table
-        # merge = pd.merge(merge, max_table, how="left", on="time")
+        merge = pd.merge(vus, reqd, how="left", on="time")
+        #merge = pd.merge(merge, reqd_max, how="left", on="time")
+        #merge = pd.merge(merge, reqd_med, how="left", on="time")
     else:
-        merge = pd.merge(merge, median_table, how="left", on="time")
+        merge = pd.merge(merge, reqd, how="left", on="time")
 
 # set time column to be the index
 merge = merge.set_index("time")
 print(merge.describe())
 
 # plot merged table
-merge.plot(kind="line")
+ax = merge.plot(kind="line")
+for i, l in enumerate(ax.lines):
+    plt.setp(l, linewidth=0.25)
 plt.xlabel("Zeit (s)")
-plt.ylabel("Anzahl der VUs")
+plt.ylabel("Anzahl der VUs / Median Antwortzeit (m)")
 plt.show()
 
 # saves the plot under the given path
