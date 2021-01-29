@@ -28,9 +28,11 @@ sudo usermod -a -G docker ec2-user
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 . ~/.nvm/nvm.sh
 nvm install node
+source ~/.bashrc
 
-# go into tests folder
+# go into tests folder and conigure git cache
 cd ba/code/tests
+git config credential.helper cache 3600
 
 # install node packages
 npm install
