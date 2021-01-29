@@ -28,7 +28,9 @@ print("ERRORS")
 errors = table[~table["status"].isin([200, np.NaN])]
 
 # only duration
-errors = errors.loc[errors["metric_name"] == "http_req_duration", ["status"]]
+errors = errors.loc[errors["metric_name"] == "http_req_duration", ["metric_value", "status"]]
 for status in errors["status"].unique():
     status_count = len(errors[errors["status"] == status].index)
     print(f'{round(status)}: {status_count}')
+
+print(errors)
