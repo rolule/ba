@@ -62,7 +62,7 @@ merge = merge.set_index("time")
 print(merge.describe())
 
 # plot merged table
-merge.plot(kind="line")
+merge.plot(kind="line", grid=True)
 plt.xlabel("Zeit (s)")
 plt.ylabel("Response Time (ms)")
 plt.show()
