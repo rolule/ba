@@ -20,6 +20,10 @@ if len(sys.argv) <= 1:
 # read csv result files from args
 paths = sys.argv[1:]
 
+names = {path: path_to_name(path) for path in paths}
+if len(set(names.values())) < len(names):
+    names = {path: path_to_name(path, showTest=True) for path in paths}
+
 # extract files from folders or just use files
 tables = {}
 for path in paths:
@@ -50,11 +54,11 @@ for path, table in tables.items():
     reqd = reqd[["time", "metric_value"]]
 
     # group req_duration by max
-    reqd_max = reqd.rename(columns={"metric_value": path_to_name(path) + "-max"}).groupby("time").max().reset_index()
-    reqd_med = reqd.rename(columns={"metric_value": path_to_name(path) + "-min"}).groupby("time").min().reset_index()
+    reqd_max = reqd.rename(columns={"metric_value": names[path] + "-max"}).groupby("time").max().reset_index()
+    reqd_med = reqd.rename(columns={"metric_value": names[path] + "-min"}).groupby("time").min().reset_index()
 
     # rename metric_value column to supplied name
-    reqd = reqd.rename(columns={"metric_value": path_to_name(path)})
+    reqd = reqd.rename(columns={"metric_value": names[path]})
 
     # groupe req_duration by median
     reqd = reqd.groupby("time").median().reset_index()

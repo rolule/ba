@@ -29,9 +29,9 @@ for path in paths:
         exit("You need to provide valid csv file paths.")
 
 # names of the plot graphs
-names = {}
-for path in paths:
-    names[path] = path_to_name(path)
+names = {path: path_to_name(path) for path in paths}
+if len(set(names.values())) < len(names):
+    names = {path: path_to_name(path, showTest=True) for path in paths}
 
 # merge all tables together
 merge = {}
@@ -62,7 +62,7 @@ merge = merge.set_index("time")
 print(merge.describe())
 
 # plot merged table
-merge.plot(kind="line", grid=True)
+merge.plot(kind="line", grid=True, linewidth=0.5)
 plt.xlabel("Zeit (s)")
 plt.ylabel("Response Time (ms)")
 plt.show()

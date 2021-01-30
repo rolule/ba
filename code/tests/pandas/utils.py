@@ -1,5 +1,5 @@
 
-def path_to_name(path):
+def path_to_name(path, showTest=False):
     values = path.split('/')
 
     name = ""
@@ -18,5 +18,10 @@ def path_to_name(path):
     # memory
     memory = values[start_index + 2]
     name += " " + memory + "MB"
+
+    # test
+    if showTest:
+        test = values[start_index + 3]
+        name += " " + test
 
     return name
