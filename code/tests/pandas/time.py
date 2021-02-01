@@ -2,6 +2,7 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 from utils import path_to_name
@@ -44,6 +45,9 @@ for path, table in tables.items():
 
     # only show time and metric value
     table = table[["time", "metric_value"]]
+
+    if names[path].endswith("spike600"):
+        table.loc[table["time"] < 120, "metric_value"] = np.NaN
 
     # rename metric_value column to supplied name
     table = table.rename(columns={"metric_value": names[path]})
