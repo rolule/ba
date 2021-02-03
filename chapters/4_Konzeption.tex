@@ -3,10 +3,28 @@ In diesem Kapitel werde ich die grundlegende Konzeption der Arbeit vorstellen.
 
 \section{Methodisches Vorgehen}
 Es soll eine Beispielanwendung sowohl Containerisiert als auch Serverless entwickelt werden. Die Konzeption dieser beiden Anwendungen wird in den folgenden Abschnitten genauer beschrieben. 
-Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und die Ergebnisse miteinander verglichen. Das methodische Vorgehen basiert dabei grundlegend auf den von Papadopoulus et. al. vorgestellten methodologischen Prinzipien für reproduzierbare Performanz-Evaluation im Cloud Computing Umfeld, die im folgenden beschrieben werden\cite{papadopoulos_methodological_2019}:
+Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und die Ergebnisse miteinander verglichen. Die Forschungsfrage wurde dazu in kleinere Teilfragen aufgeteilt, die im Laufe der Analyse untersucht werden sollen:
 
 \begin{enumerate}
-    \item[P1] Wiederholte Durchführung (Repeated experiments): Festlegen, wie viele Experimente mit der selben Konfiguration gemacht werden sollten. 
+    \item[RQ1] Wie vielen nebenläufige Lambda-Funktionen werden benötigt, um den maximalen Load einer einzigen Container-Instanz zu tragen?
+    
+    \item[RQ2] Wie ist die Performance bei normalem Load oder bei Spike Load? \\
+    H1: Die Performance einer Lambda Funktion stagniert unter Spike Load stark, während sie bei einem Container gleich bleibt.
+
+    \item[RQ3] Welchen Einfluss hat die Nutzung größerer CPU / RAM Werte? \\
+    H3: Ein Container kann bei einer Verdopplung doppelt so viele Anfragen verarbeiten. Eine Lambda Funktion kann ihre Anfragen schneller verarbeiten.
+    
+    \item[RQ4] Welchen Einfluss hat die Nutzung mehrerer Container Instanzen auf die Performance? \\
+    H4: Die Performance steigt linear mit jedem neuen Container an
+    
+    \item[RQ5] Welchen Einfluss hat die ein Use-Case, der mehreren Endpunkten anfragt\\
+    H5: Bei Lambda großer Einfluss, da jede Funktion einzeln einen Coldstart machen muss
+\end{enumerate}
+
+Das methodische Vorgehen für den Aufbau der Test-Umgebung basiert dabei grundlegend auf den von Papadopoulus et. al. vorgestellten methodologischen Prinzipien für reproduzierbare Performanz-Evaluation im Cloud Computing Umfeld, die im folgenden beschrieben werden\cite{papadopoulos_methodological_2019}:
+
+\begin{enumerate}
+    \item[P1] Wiederholte Durchführung (Repeated experiments): Mehrere Experimente mit der selben Konfiguration durchführen. 
     \item[P2] Konfigurations-Abdeckung (Workload and configuration coverage): Experimente in verschiedenen Konfigurationen der relevanten Parameter durchführen. Beispielsweise verschiedene Hardware-Konfigurationen aber auch verschiedene Load-Testing-Typen (z.B. Spike Test)
     \item[P3] Experimenteller Aufbau (Experimental setup description): Beschreibung der Hardware- und Software (inklusive Version), und anderer Parameter die für das Experiment genutzt wurden und einen Einfluss auf dessen Ausgang haben können. Zusätzlich sollte die Beschreibung das genaue Ziel des Experiments beinhalten.
     \item[P4] Offener Zugang zu Artefakten (Open access artifact): Möglichst viele für die Experimente genutzten Konfigurationsdateien, Protokolle, etc. sollten versioniert und offen zugänglich sein.
@@ -15,6 +33,10 @@ Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und 
     \item[P7] Einheiten (Measurement units): Für alle Messungen die zugehörige Einheit angeben
     \item[P8] Kosten (Cost): Kostenmodell, Ressourcennutzung und abgerechnete Kosten angeben.
 \end{enumerate}
+
+Das Prinzip P4 wird erfüllt durch die Nutzung eines öffentlichen GitHub Repositories unter https://github.com/rolule/ba. Dort finden sich die Skripte die zur Generierung der Tests verwendet wurden und die Output-Artefakte der Tests.
+
+Im Anschluss an die Performance-Tests wird noch auf Möglichkeiten der Skalierung und die Kosten der beiden Technologien eingegangen.
 
 \section{Konzeption der Testanwendung}
 Als Testanwendung wird ein einfaches REST-Backend am Beispiel eines Notiz-Applikation entwickelt, wie es in der Praxis häufig verwendet wird. Der Service stellt folgende Routen bereit:  
@@ -26,8 +48,8 @@ Als Testanwendung wird ein einfaches REST-Backend am Beispiel eines Notiz-Applik
     \item POST /: Das Erstellen einer Notiz
 \end{enumerate}
 
-Um die Anwendung möglichst einfach zu gestalten und Unterschiede zwischen den beiden Technologien zu minimieren, wird zunächst auf die Verwendung einer Datenbank verzichtet. Stattdessen wird ein Delay von 50 Millisekunden für jeden Request eingebaut. 
-Auch auf Authorisierungs-Mechanismen wird der Einfachheit halber verzichtet. Dies erlaubt es außerdem, von einer konstanten Benutzer-Rate auszugehen\cite{molyneaux_art_2014}. 
+Um die Anwendung möglichst einfach zu gestalten und Unterschiede zwischen den beiden Technologien zu minimieren, wird auf die Verwendung einer Datenbank verzichtet. Stattdessen wird ein Delay von 50 Millisekunden für jeden Request eingebaut. 
+Auch auf Authorisierungs-Mechanismen wird der Einfachheit halber verzichtet. Dies erlaubt es außerdem, von einer konstanten Benutzer-Rate auszugehen, da alle "`eingeloggten"' Benutzer auch gleichzeitig aktiv sind\cite{molyneaux_art_2014}. 
 Als Runtime wird sowohl bei der Serverless- als auch bei der containerisierten Anwendung Node.js 12 verwendet.
 
 \subsection{Serverless}
@@ -55,10 +77,12 @@ Abbildung \ref{fig:notes-container} zeigt das Setup der mit der Container-Archit
     \label{fig:notes-container}
 \end{figure}
 
+Bei der Konfiguration des Container-Clusters muss für Fargate eine Task-Definition erstellt werden. Diese beinhaltet alle Tasks die gleichzeitig in einem Service laufen sollen. AWS ECS erlaubt nur bestimmte Paare von CPU und Speicher-Einstellungen für einen Container. Für die Tests mit 128MB und 256MB Speicher wird das Einstellungs-Paar mit 512MB Speicher und 0.25vCPU (virtual CPUs) festgelegt und die einzelnen Container mit entsprechenden harten Limits konfiguriert. Für die Tests mit 512MB wird die Einstellungs-Paar mit 1GB Speicher und 0.5vCPU verwendet, der ein hartes Limit von 512MB Speicher zugewiesen bekommt.
+
 \section{Konzeption der Tests}
 
 \subsection{Testing-Tool}
-Um die Performance der eben vorgestellten Anwendungen zu testen, wird das Performance-Testing Tool k6 \cite{noauthor_load_nodate} verwendet. Durch eine optimierte CPU Auslastung ermöglicht es, etliche virtuelle Benutzer zum Testen einer Anwendung erstellen lassen ohne die Notwendigkeit einer verteilen Ausführung\cite{noauthor_running_nodate}. Die Benutzer arbeiten parallel die in Sektion \ref{sec:use-cases} vorgestellten Use-Cases ab, bei denen verschiedene Requests an die REST-APIs der Services geschickt werden. 
+Um die Performance der eben vorgestellten Anwendungen zu testen, wird das Open-Source Performance-Testing Tool k6 \cite{noauthor_load_nodate} verwendet. Durch eine optimierte CPU Auslastung ermöglicht es ohne die Notwendigkeit einer verteilen Ausführung, etliche virtuelle Benutzer zum Testen einer Anwendung erstellen zu lassen\cite{noauthor_running_nodate}. Die Benutzer arbeiten parallel die in Sektion \ref{sec:use-cases} vorgestellten Use-Cases ab, bei denen verschiedene Requests an die REST-APIs der Services geschickt werden. 
 
 Als Load-Generator wird eine in der AWS Region Paris (eu-west-3) stationierte EC2 Instanz des Typs t3.xlarge verwendet.
 Nach eigenen Angaben benötigt k6 für jeden virtuellen Benutzer und für einen kleinen Test eine Speicherauslastung zwischen 1 und 5 Megabyte\cite{noauthor_running_nodate}. Da die verwendete t3.xlarge Instanz 16 Gigabyte RAM beinhaltet, sollten theoretisch mehr als 3200 und maximal 16.000 gleichzeitige virtuelle Benutzer von der Testumgebung unterstützt werden. Die Instanz weist eine Netzwerkleistung von bis zu 5 Gbit/s auf, welche bei jeder Testausführung mittels des Tools iftop überwacht wird, um sicherzugehen, dass das Netzwerk nicht zum Flaschenhals wird. Auch die CPU Auslastung wird mittels htop überprüft.
@@ -97,11 +121,9 @@ Bei Performance Tests können verschiedene Testing-Strategien eingesetzt werden.
     \item Load Testing: Dient der Evaluierung der System-Performance in Bezug auf die Anzahl der gleichzeitigen Benutzer oder der Requests-Rate. Es wird der Normalbetrieb des Systems simuliert.
     
     \item Stress Testing: Dient dazu, die Grenzen des Systems in den Punkten Verfügbarkeit und  Stabilität auszutesten. Man geht über den normalen Betrieb hinaus und eventuell so hoch dass das System der Last nicht mehr standhalten kann. Bei einem Stress-Test wird schrittweise die Last auf das System erhöht. So kann man zum Beispiel herausfinden, ob das System großen Anstürmen, wie z.B einem Sale-Event bei einem Online-Shop, Stand halten kann.
-    
-    \item Spike Testing: Eine Variante des Stress-Tests bei dem in einem kurzen Zeitraum extreme Last für das System-under-Test generiert wird. Im Gegensatz zu einem normalen Stress-Test, wird die Last hierbei nicht stufenweise, sondern plötzlich erhöht. Dadurch wird getestet, wie das System reagiert, wenn nicht ausreichend Zeit zur Skalierung der Infrastruktur bekommt.
 \end{enumerate}
 
-Es gibt noch weitere Test-Typen wie Smoke- oder Soak-Tests, die allerdings keine Relevanz für die Zielfrage dieser Arbeit haben und daher nicht betrachtet werden.
+Es gibt noch weitere Test-Typen wie Smoke- oder Soak-Tests, die allerdings keine Relevanz für die Zielfragen dieser Arbeit haben und daher nicht betrachtet werden.
 
 \subsection{Getestete Use-Cases}\label{sec:use-cases}
 Die folgenden Use-Cases werden bei der Analyse der Systems-under-test evaluiert. Die nach einem Request angegebenen Zeitintervalle entsprechen der sogenannten "`Think Time"', also der Zeit die ein Benutzer normalerweise benötigt um sich für seine nächste Handlung zu entscheiden. Es wird, wie von Molyneaux empfohlen, mit einer ±10 prozentigen Abweichung versucht, eine realistischere Szenariodurchführung zu erreichen\cite{molyneaux_art_2014}. Um möglichst realitätsnahe Ergebnisse zu erzielen, wird davon ausgegangen, dass der Benutzer etwa eine Sekunden benötigt, um sich einen Überblick über alle Notizen zu verschaffen oder einen Fehler in der Notiz zu erkennen und etwa drei Sekunden, um eine Notiz zu erstellen oder zu bearbeiten. Am Ende jedes Use-Cases wird zudem eine Wartezeit von etwa einer Sekunde eingefügt, um den darauf folgenden ersten Request der nächsten Iteration nicht sofort nach dem letzten Request der aktuellen Iteration durchzuführen.  
@@ -125,28 +147,10 @@ Die folgenden Use-Cases werden bei der Analyse der Systems-under-test evaluiert.
 \end{itemize}
 
 
-\subsection{Test-Variablen}
-\begin{itemize}
-    \item Use-Case: A / B / C
-    \item Test Typ: Pipe-clean, Load, Stress, Spike-Test
-    \item CPU und Memory des Systems: 128-...
-    \item Skalierungs-Größe: 2 / 3 / 5 / 10 Task-Instanzen
-    \item Anzahl an parallelen Benutzern: 25 / 50 / 75 / 100 ... 200
-    \item Größe der Lambda Funktion
-    \item Unterschiedliche Szenarien: Bei Lambda großer Unterschied 
+\subsection{Ablauf der Tests}
+Alle Tests werden in Abhängigkeit von der Konfiguration der Systeme bezüglich des Speichers oder der Anzahl der Container-Instanzen durchgeführt.
+Nach Molyneaux \cite{molyneaux_art_2014} sollte für jede Konfiguration zunächst ein Pipe-clean Test durchgeführt werden. Dabei wird jedes System von nur einem einzigen Benutzer für ein bestimmtes Szenario angefragt. Dadurch lassen sich Basiswerte für die betrachteten Metriken ableiten, welche in späteren Tests zu Vergleichen hinzugezogen werden können.
 
-    \item (Datenbank -> vielleicht Einfluss auf Memory?)
-    \item (Skalierungs-Schwellen: Ab 60 / 70 / 75 Prozent CPU Auslastung)
-    \item (Minimiertes JavaScript)
-\end{itemize}
-
-Es ergeben sich dadurch folgende Test-Szenarien:
-
-CPU 128 / 256 / 512 für Use-Case A / B / C mit Instanzen 1 / 2 / 3 
-
-
-\subsection{Test-Ablauf}
-Nach Molyneaux \cite{molyneaux_art_2014} sollte zunächst ein Pipe-clean Test durchgeführt werden. Dabei wird jedes System von nur einem einzigen Benutzer für ein bestimmtes Szenario angefragt. Dadurch lassen sich Basiswerte für die betrachteten Metriken ableiten, welche in späteren Tests zu Vergleichen hinzugezogen werden können.
-
-Anschließend wird ein Stress-Test für die Konfiguration der Container-Anwendung durchgeführt. Dies ist notwendig, da AWS Lambda ein von Natur automatisch skalierendes System ist, während ein Container alleine nicht skalieren kann. Um eine zu hohe Auslastung des Containers während des Tests zu vermeiden, wird der Stress-Test durchgeführt, um das VU-Limit für die aktuelle Container-Konfiguration zu erkennen. 
-Im Anschluss wird mit diesem ermittelten VU-Limit ein Last-Test gegen beide System durchgeführt und die Ergebnisse beider SUTs miteinander verglichen.
+Anschließend wird ein Stress-Test für die Konfiguration der Container-Anwendung durchgeführt. Dies ist notwendig, da AWS Lambda ein von Natur automatisch skalierendes System ist, während ein Container alleine nicht skalieren kann. Um eine zu hohe Auslastung des Containers während der Last-Tests zu vermeiden, wird der Stress-Test durchgeführt, um das VU-Limit für die aktuelle Container-Konfiguration zu erkennen. 
+Im Anschluss wird mit diesem ermittelten VU-Limit ein Last-Test gegen beide System durchgeführt und die Ergebnisse beider SUTs miteinander verglichen. 
+Der Last-Test wird mit einem langsamen und einem schnelleren Anstieg der Virtuellen Benutzer durchgeführt. Dadurch lässt sich das Verhalten der Systeme unter in kurzem Zeitraum zunehmender Last evaluieren. Der Last-Test mit dem schnellen Anstieg der Benutzer wird im folgenden als Spike-Test bezeichnet, um den Unterschied der beiden Tests deutlich zu machen. 
