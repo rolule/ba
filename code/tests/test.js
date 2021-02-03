@@ -239,7 +239,7 @@ async function start() {
   console.log();
 
   exec(
-    `k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`,
+    `k6 -q --log-output none run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`,
     { maxBuffer: 1024 * 1024 * 100 },
     (error, stdout, stderr) => {
       if (error) {
