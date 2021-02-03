@@ -174,7 +174,7 @@ async function start() {
     const { strategy } = await prompt.get({
       properties: {
         strategy: {
-          pattern: new RegExp(`^[${1}-${fileNames.length}]$`),
+          pattern: new RegExp(`^[1-9]+$`),
           required: true,
         },
       },
