@@ -241,6 +241,9 @@ async function start() {
   console.log(`Expected end: ${formatDE(endDate, "kk:mm")}`);
   console.log();
 
+  const tarArchiveName = `${fileName}.tar.gz`;
+  const tarArchivePath = `${outputFolder}/${tarArchiveName}`;
+
   if(log){
     console.log(`k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`);
     console.log(`cd ${outputFolder} && tar cfz ${tarArchiveName} ${fileName}.csv ${fileName}.json && cd -`)
@@ -288,8 +291,6 @@ async function start() {
   - val: ${metrics.vus.value}`);
 
       // create tar.gz archive of output files and go back in tests directory
-      const tarArchiveName = `${fileName}.tar.gz`;
-      const tarArchivePath = `${outputFolder}/${tarArchiveName}`;
       exec(
         `cd ${outputFolder} && tar cfz ${tarArchiveName} ${fileName}.csv ${fileName}.json && cd -`,
         (error, stdout, stderr) => {
