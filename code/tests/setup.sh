@@ -52,3 +52,7 @@ sudo ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
 # install htop
 sudo yum install -y htop
+
+# install iftop
+sudo amazon-linux-extras install epel -y
+sudo yum install -y iftop
