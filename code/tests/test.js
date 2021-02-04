@@ -7,6 +7,9 @@ const { exec } = require("child_process");
 const { exit } = require("process");
 
 // command lint args
+
+let log = process.argv.includes("--log")
+
 // confg file path
 let configFile = "config.yaml";
 if (process.argv.includes("--config")) {
@@ -238,6 +241,13 @@ async function start() {
   console.log(`Expected end: ${formatDE(endDate, "kk:mm")}`);
   console.log();
 
+  if(log){
+    console.log(`k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`);
+    console.log(`cd ${outputFolder} && tar cfz ${tarArchiveName} ${fileName}.csv ${fileName}.json && cd -`)
+    console.log(`git add ${tarArchivePath} && git commit -m "${commitMsg}"`)
+    exit(0)
+  }
+
   exec(
     `k6 -q --log-output none run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`,
     { maxBuffer: 1024 * 1024 * 100 },
@@ -306,6 +316,8 @@ async function start() {
                 console.log(`STDERR: ${stderr}`);
                 return;
               }
+
+              exec(`rm ${outputFile}.csv ${outputFile}.json`)
             });
           } else {
             console.log("Did not add anything to git");
