@@ -12,7 +12,7 @@ Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und 
     H1: Die Performance einer Lambda Funktion stagniert unter Spike Load stark, während sie bei einem Container gleich bleibt.
 
     \item[RQ3] Welchen Einfluss hat die Nutzung größerer CPU / RAM Werte? \\
-    H3: Ein Container kann bei einer Verdopplung doppelt so viele Anfragen verarbeiten. Eine Lambda Funktion kann ihre Anfragen schneller verarbeiten.
+    H3: Ein Container kann bei einer Verdopplung doppelt so viele Anfragen verarbeiten.
     
     \item[RQ4] Welchen Einfluss hat die Nutzung mehrerer Container Instanzen auf die Performance? \\
     H4: Die Performance steigt linear mit jedem neuen Container an
@@ -53,31 +53,32 @@ Auch auf Authorisierungs-Mechanismen wird der Einfachheit halber verzichtet. Die
 Als Runtime wird sowohl bei der Serverless- als auch bei der containerisierten Anwendung Node.js 12 verwendet.
 
 \subsection{Serverless}
-Für die Entwicklung der Serverless-Anwendung wird das, mit mehr als 38.000 Github-Stars populäre, Serverless-Framework\cite{noauthor_serverless_nodate} verwendet. Dabei handelt es sich um ein Open-Source Framework zur Entwicklung von Serverless Anwendungen. Es übernimmt die Erstellung von Anwendungs-Stacks, Rechteverteilung und Konfiguration bei allen gängigen Public-Cloud Anbietern wie AWS, Azure oder GCP. Da in dieser Arbeit AWS verwendet wird, erstellt Serverless automatisch einen Anwendungs-Stack mit AWS CloudFormation. Dabei wird ein AWS API-Gateway erstellt, das über die Routen der REST-Schnittstelle verfügt. Trifft eine Anfrage an eine der Routen ein, übernimmt das API-Gateway die Auslösung des passenden Events, wodurch die korrekte Lambda-Funktion mit den vom Benutzer im HTTP-Request übergebenen Parametern aufgerufen wird. 
-
-Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Denn auch wenn man sich nicht mehr um Server kümmern muss, ist dennoch die Konfiguration des API-Gateways notwendig.
-
-Abbildung \ref{fig:notes-serverless} zeigt das Setup der mit der Serverless-Architektur konzipierten Webanwendung.
+Für die Entwicklung der Serverless-Anwendung wird das, mit mehr als 38.000 Github-Stars populäre, Serverless-Framework\cite{noauthor_serverless_nodate} verwendet. Dabei handelt es sich um ein Open-Source Framework zur Entwicklung von Serverless Anwendungen. Es übernimmt die Erstellung von Anwendungs-Stacks, Rechteverteilung und Konfiguration bei allen gängigen Public-Cloud Anbietern wie AWS, Azure oder GCP. Da in dieser Arbeit AWS verwendet wird, erstellt Serverless automatisch einen Anwendungs-Stack mit AWS CloudFormation. 
+Abbildung \ref{fig:serverless-testing-architektur} zeigt das Setup der mit der Serverless-Architektur konzipierten Webanwendung.
 
 \begin{figure}[H]
-    \includegraphics[width=\textwidth]{img/platzhalter.png}
-    \caption[Serverless Notiz-Anwendung]{Serverless Notiz-Anwendung}
-    \label{fig:notes-serverless}
+    \includegraphics[width=\textwidth]{img/serverless-testing-architektur.png}
+    \caption[Testing-Architektur der Serverless Notiz-Anwendung]{Testing-Architektur der Serverless Notiz-Anwendung}
+    \label{fig:serverless-testing-architektur}
 \end{figure}
+
+Der von Serverless bzw. CloudFormation erstellte Anwendungs-Stack beinhaltet ein Amazon API-Gateway, das über die Routen der REST-Schnittstelle verfügt. Trifft eine HTTP-Anfrage an eine der Routen ein, übernimmt das API-Gateway die Auslösung des passenden Events, wodurch der Lambda-Service die korrekte Lambda-Funktion startet und mit den vom Benutzer im HTTP-Request übergebenen Parametern aufruft. Nach Beendigung der Funktion wird ihr Rückgabewert über das API-Gateway zurück an den Benutzer gesendet.
+
+Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Denn auch wenn man sich zwar nicht mehr um Server kümmern muss, ist dennoch die Konfiguration des API-Gateways notwendig, da Lambda Funktionen nur über ein Auslöse-Event gestartet werden können. Zusätzlich minimiert das Framework den geschriebenen JavaScript Code mittels Webpack und erhöht so die Performance der Lambda-Funktion.
 
 \subsection{Container}
 Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
-Die Ausführung der Anwendung erfolgt auf der AWS Elastic Container Service (ECS) Plattform, einem von AWS bereitgestelltem Orchestrations-Tool. Es wird AWS Fargate benutzt, um die Erstellung eines Server-Clusters weg zu abstrahieren. Des Weiteren wird ein Elastic Load Balancer (ELB) vom Typ Application verwendet, um die eingehenden Requests auf die verschiedenen Container zu verteilen. 
+Die Ausführung der Anwendung erfolgt auf der AWS Elastic Container Service (ECS) Plattform, einem von AWS bereitgestelltem Orchestrations-Tool. Es wird der Starttyp Fargate benutzt, welcher die Erstellung eines Server-Clusters automatisch durchführt und so die Konfiguration erleichtert. Des Weiteren wird ein Elastic Load Balancer (ELB) vom Typ Application verwendet, um die eingehenden Requests auf die verschiedenen Container zu verteilen. 
 
-Abbildung \ref{fig:notes-container} zeigt das Setup der mit der Container-Architektur konzipierten Notiz-Anwendung.
+Abbildung \ref{fig:fargate-testing-architektur} zeigt das Setup der mit der Container-Architektur konzipierten Notiz-Anwendung.
 
 \begin{figure}[H]
-    \includegraphics[width=\textwidth]{img/platzhalter.png}
-    \caption[Containerisierte Notiz-Anwendung]{Containerisierte Notiz-Anwendung}
-    \label{fig:notes-container}
+    \includegraphics[width=\textwidth]{img/fargate-testing-architektur.png}
+    \caption[Testing-Architektur der Container Notiz-Anwendung]{Testing-Architektur der Container Notiz-Anwendung}
+    \label{fig:fargate-testing-architektur}
 \end{figure}
 
-Bei der Konfiguration des Container-Clusters muss für Fargate eine Task-Definition erstellt werden. Diese beinhaltet alle Tasks die gleichzeitig in einem Service laufen sollen. AWS ECS erlaubt nur bestimmte Paare von CPU und Speicher-Einstellungen für einen Container. Für die Tests mit 128MB und 256MB Speicher wird das Einstellungs-Paar mit 512MB Speicher und 0.25vCPU (virtual CPUs) festgelegt und die einzelnen Container mit entsprechenden harten Limits konfiguriert. Für die Tests mit 512MB wird die Einstellungs-Paar mit 1GB Speicher und 0.5vCPU verwendet, der ein hartes Limit von 512MB Speicher zugewiesen bekommt.
+Bei der Konfiguration des Container-Clusters muss für Fargate eine Task-Definition erstellt werden. Diese beinhaltet alle Tasks die gleichzeitig in einem Service laufen sollen. Ein Service konfiguriert, wie die Ausführung mehrerer Container-Instanzen ablaufen soll. AWS ECS erlaubt nur bestimmte Paare von CPU und Speicher-Einstellungen für einen Container. Für die Tests mit 128MB und 256MB Speicher wird das Einstellungs-Paar mit 512MB Speicher und 0.25vCPU (virtual CPUs) festgelegt und die einzelnen Container mit entsprechenden harten Limits von 128MB und 256MB für den Arbeitsspeicher konfiguriert. Für die Tests mit 512MB wird die Einstellungs-Paar mit 1GB Speicher und 0.5vCPU verwendet, der ein hartes Limit von 512MB Speicher zugewiesen bekommt.
 
 \section{Konzeption der Tests}
 
@@ -92,7 +93,7 @@ Das Testing-Tool k6 speichert für jeden Request an einen bestimmten API-Endpunk
 \begin{enumerate}
     \item VUS (virtual users): Die Anzahl der virtuellen Benutzer zum aktuellen Zeitpunkt 
     
-    \item Response Time: Die Zeit vom Abschicken eines Requests bis zum Erhalt der Antwort in Millisekunden (ms). Dabei wird Aufwand für eventuelle DNS Lookups nicht mit einberechnet. 
+    \item Antwortzeit (Response Time): Die Zeit vom Abschicken eines Requests bis zum Erhalt der Antwort in Millisekunden (ms). Dabei wird Aufwand für eventuelle DNS Lookups nicht mit einberechnet. 
     
     \item HTTP-Statuscodes: Geben den Status eines HTTP-Requests an. Wichtig für die Betrachtung sind vor allem die Codes:
         \begin{enumerate}
@@ -100,20 +101,10 @@ Das Testing-Tool k6 speichert für jeden Request an einen bestimmten API-Endpunk
             \item 503 (Service Unavailable): Der Server kann den Request nicht bearbeiten. Kann auftreten, wenn zu viele Requests bei einem Service eintreffen und dieser aufgrund mangelnder verfügbarer Ressourcen (CPU / Speicher) nicht in der Lage ist, die Anfrage zu bearbeiten.
         \end{enumerate}
         
-    \item Request Rate: Die aggregierte Anzahl aller bereits abgeschlossenen Requests pro Sekunde (req / s)
+    \item Request Rate: Die durchschnittliche Anzahl der Requests pro Sekunde (req / s)
 \end{enumerate}
 
-Da k6 keine eingebaute Visualisierungslösung bietet, werden diese Werte mittels der k6 Integration an den Cloud-Monitoring Service Datadog gesendet. Dort treffen sie mit von AWS Cloudwatch gesammelten Metriken zusammen, wodurch sie gemeinsam ausgewertet werden können.
-
-Abbildung \ref{fig:test-architecture} zeigt das vollständige Setup der mit der Testing-Architektur.
-
-Für zusätzliche Analysen und Vergleiche mehrerer Test-Ausführungen untereinander, werden die Ergebnisse jedes k6-Tests auch als CSV-Text-Datei exportiert. Im Anschluss können diese Dateien mit dem Data-Science Framework Pandas\cite{noauthor_pandas_nodate} für die Programmiersprache Python analysiert und verglichen werden. Der Source-Code der Analysen und die Ergebnis-Artefakte der Tests sind im Code-Repository dieser Arbeit zu finden.
-
-\begin{figure}[H]
-    \includegraphics[width=\textwidth]{img/platzhalter.png}
-    \caption[Test Architektur der Notiz-Anwendung]{Test Architektur der Notiz-Anwendung}
-    \label{fig:test-architecture}
-\end{figure}
+Für Analysen und Vergleiche mehrerer Test-Ausführungen untereinander, werden die Ergebnisse jedes k6-Tests als CSV-Text-Datei exportiert. Im Anschluss können diese Dateien mit dem Data-Science Framework Pandas\cite{noauthor_pandas_nodate} für die Programmiersprache Python analysiert und verglichen werden. Der Source-Code der Analysen und die Ergebnis-Artefakte der Tests sind im Code-Repository dieser Arbeit zu finden.
 
 \subsection{Test-Typen}
 Bei Performance Tests können verschiedene Testing-Strategien eingesetzt werden.
@@ -154,3 +145,5 @@ Nach Molyneaux \cite{molyneaux_art_2014} sollte für jede Konfiguration zunächs
 Anschließend wird ein Stress-Test für die Konfiguration der Container-Anwendung durchgeführt. Dies ist notwendig, da AWS Lambda ein von Natur automatisch skalierendes System ist, während ein Container alleine nicht skalieren kann. Um eine zu hohe Auslastung des Containers während der Last-Tests zu vermeiden, wird der Stress-Test durchgeführt, um das VU-Limit für die aktuelle Container-Konfiguration zu erkennen. 
 Im Anschluss wird mit diesem ermittelten VU-Limit ein Last-Test gegen beide System durchgeführt und die Ergebnisse beider SUTs miteinander verglichen. 
 Der Last-Test wird mit einem langsamen und einem schnelleren Anstieg der Virtuellen Benutzer durchgeführt. Dadurch lässt sich das Verhalten der Systeme unter in kurzem Zeitraum zunehmender Last evaluieren. Der Last-Test mit dem schnellen Anstieg der Benutzer wird im folgenden als Spike-Test bezeichnet, um den Unterschied der beiden Tests deutlich zu machen. 
+
+Zwischen jedem Lambda-Test wurde eine Pause von mindestens 10 Minuten eingelegt, um warme Funktionen Zeit zu geben vom Garbage-Collector beendet zu werden.

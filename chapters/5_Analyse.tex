@@ -98,12 +98,12 @@ Für den Spike-Test scheint es sich ähnlich zu verhalten. Auch wenn nach 180 Se
     \label{fig:lambda-ucb-load600-vs-spike600-example}
 \end{figure}
 
-Für Use-Case B (Abbildung \ref{fig:lambda-ucb-load600-vs-spike600-example}) sieht der Verlauf ähnlich aus, allerdings fällt die Kurve des Load-Tests nach Erreichen der höchsten Antwortzeit schneller ab als die des Spike-Test. Außerdem erreicht der Spike-Test mit ca. 95ms eine ca. 5ms höhere maximale Antwortzeit als der Load-Test. 
+Für Use-Case B (Abbildung \ref{fig:lambda-ucb-load600-vs-spike600-example}) sieht der Verlauf ähnlich aus, allerdings fällt die Kurve des Load-Tests nach Erreichen der höchsten Antwortzeit schneller ab als die des Spike-Test. Außerdem erreicht der Spike-Test mit ca. 95ms eine ca. 5ms höhere maximale Antwortzeit als der Load-Test. Interessant ist außerdem, dass die Antwortzeit des Load-Test eine größere Schwankung aufweist, als die des Spike-Tests, bei dem aufeinander folgende Werte stets relativ nah beieinander liegen.
 
 Da die Antwortzeiten des Spike-Test trotz des dreimal schnelleren Anstiegs dennoch äußerst nah bei denen des Load-Tests liegen, lässt sich entgegen H1 annehmen, dass ein schneller Spike-Load kaum eine Veränderung der Antwortzeit mit sich bringt. Bei größeren Nutzerzahlen könnte dieser Effekt jedoch größer ausfallen.
 
 
-\section{Andere Konfigurationen}
+\section{256MB Konfigurationen}
 Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 256 Megabyte untersucht werden. Ziel dessen ist es, Unterschiede zu den in der vorangegangenen Sektion getesteten Konfigurationen zu erkennen.
 
 \subsection{Pipe-Clean Tests}
@@ -121,6 +121,17 @@ Trotz des doppelt so großen Speichers und vCPUs konnte jedoch keine Verbesserun
 
 Die Lambda-Tests wurden für diese Konfiguration nicht durchgeführt, da keine Verbesserung gegenüber der 128MB Variante zu vermutet wird.
 
+\section{512MB Konfigurationen}
+Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 512 Megabyte untersucht werden. 
+
+\subsection{Pipe-Clean Tests}
+
+\subsection{Stress-Tests}
+Ein Stress-Test des Containers mit bis zu 1500 Benutzern, ergab für Use-Case A, dass die Antwortzeit des Containers ab einer VU-Anzahl von ca. 1400 Benutzern deutlich zunimmt. Mit Eintreten der 1400 Benutzer erreichte das Container Cluster ebenso eine CPU-Auslastung von 100 Prozent. Für Use-Case B musste ein weiterer Stress-Test durchgeführt werden, da bei 1500 Benutzern nur eine CPU-Auslastung von 58\% erreicht werden konnte. Der zweite Stress-Test wurde mit bis zu 2400 Benutzern durchgeführt. Bei ca. 2350 VUs wurde die maximale Auslastung des Containers erreicht.
+
+Im Anschluss an die Stress-Tests des Containers wurden diese mit den gleichen Konfigurationen gegen die Lambda-Anwendung durchgeführt. 
+
+
 
 \section{Skalierung und Optimierung}
 \subsection{Container}
@@ -135,13 +146,17 @@ Bei einer Target Tracking Policy, lässt sich für Metriken ein Ziel festlegen, 
 
 Problematisch ist allerdings die Größe des Intervalls, in dem die Metriken überprüft werden können. Standardmäßig kann dies nur alle fünf Minuten erfolgen. Träfe die Container-Anwendung eine plötzliche Spitzenlast, würde es fünf Minuten dauern, bis reagiert und die Kapazität erhöht werden könnte. Nach Absprache mit AWS kann sich dieses Intervall auf eine Minute senken lassen. Dies ist allerdings, verglichen mit den Skalierungsmöglichkeiten von AWS Lambda, noch immer zu langsam für Anwendungen die hochverfügbar sein müssen.
 
+Wichtig für eine schnelle Skalierung ist vor allem auch die Größe des Containers. Da bei jeder neu hinzugefügten Container-Instanz das Container-Image von der Registry heruntergeladen werden muss, ist es notwendig, die Image-Größe möglichst zu minimieren. Zum Einsatz kommende Techniken sind hierbei beispielsweise die Nutzung eines Alpine-Images als Basis-Image, einer besonders kleinen Linux-Distribution, Multi-Stage Builds, mit denen unnötige Dateien entfernt werden können oder Layer-Merging, bei dem die Anzahl der Docker-Layer minimiert wird.
+
 
 \subsection{Lambda}
 Lambda ist ein von Natur aus horizontal skalierendes System, daher müssen vom Entwickler theoretisch keine Einstellungen vorgenommen werden, um eine hochverfügbare Anwendung zu schaffen. Um auch Cold-Starts möglichst zu vermeiden, lässt sich die gewollte Nebenläufigkeit allerdings auch schon vor einem Benutzer-Ansturm definieren (Provisioned Concurrency). Lambda startet dann bereits Funktionen vor, die dann bei Bedarf keinen Kaltstart mehr erfordern, sondern direkt einen Warmstart durchführen können. Kombinieren lässt sich dies mit Autoscaling, um die provisionierte Kapazität an steigende Anfragezahlen anzupassen. 
 
-Auch die Größe des Arbeitsspeicher einer Lambda-Funktion kann einen Einfluss auf das Skalierungsverhalten nehmen. Da eine Funktion mit größerem Speicher auch mehr CPU zugewiesen bekommt, können Anfragen schneller verarbeitet werden und es werden eventuell weniger nebenläufige Funktionen und damit weniger Cold-Starts benötigt. Dies hat sich in den Experimenten dieser Arbeit zwar nicht bestätigt, allerdings könnte es für andere Lambda-Frameworks (z.B. Java oder .NET) einen Unterschied machen.
+Auch die Größe des Arbeitsspeicher einer Lambda-Funktion kann einen Einfluss auf das Skalierungsverhalten nehmen. Da eine Funktion mit größerem Speicher auch mehr CPU zugewiesen bekommt, können Anfragen, bei besonders CPU-intensiven Aufgaben, schneller verarbeitet werden und es werden eventuell weniger nebenläufige Funktionen und damit weniger Cold-Starts benötigt. Es gibt Tools wie "`AWS Lambda Power Tuning"'\cite{casalboni_alexcasalboniaws-lambda-power-tuning_2021}, die es für solche Funktionen ermöglichen, die beste Konfiguration zu finden.
 
-Lambda ist also auch nicht ohne weiteres eine Blaupause für jede beliebige Anwendung. Es lässt sich für jede Funktion eine vor-provisionierte Concurrency, Autoscaling und die Größe der Funktion einstellen.
+Es gibt darüber hinaus vielfältige Wege, die Coldstart Zeit einer Lambda-Funktion zu verringern. Ähnlich zum Docker-Container, hat auch die Größe einer Lambda-Funktion Einfluss auf die Startzeit. Denn bei jedem Coldstart muss der Funktions-Code in den Lambda-Container geladen werden. Bei einigen Sprachen wie Java oder .NET macht ebenfalls die Konfiguration des Lambda-Arbeitsspeichers einen großen Unterschied\cite{malishev_aws_2019}. 
+
+Lambda ist also auch nicht ohne weiteres eine Blaupause für jede beliebige Anwendung. Es lässt sich für jede Funktion eine vor-provisionierte Concurrency, Autoscaling und die Größe der Funktion einstellen. 
 
 \section{Kosten}
 
@@ -172,7 +187,7 @@ Für eine n-fache Anzahl an Tasks ergeben sich auch die n-fachen Kosten pro Mona
 
 
 \subsection{Lambda}
-Die Ausführung von Lambda-Funktionen wird nach der Ausführungszeit in Millisekunden abgerechnet. Dabei zählt die Zeit eines Cold-Starts mit in die Berechnung ein. Bei der Berechnung zählt aber auch die konfigurierte Arbeitsspeichergröße mit in das Ergebnis ein. Derzeit berechnet AWS in der Region Frankfurt (eu-central-1) Kosten von 0,0000166667 US-Dollar pro GB-Sekunde\cite{noauthor_lambda_nodate}. Zusätzlich müssen pro 1.000.000 Ausführungen im Monat noch einmal 0,20 US-Dollar Anforderungsgebühren gezahlt werden. AWS bietet ein kostenloses Nutzenkontingent von 400.000 Aufrufen pro Funktion im Monat an.
+Die Ausführung von Lambda-Funktionen wird nach der Ausführungszeit in Millisekunden abgerechnet. Dabei zählt die Zeit eines Cold-Starts mit in die Berechnung ein. Auch die konfigurierte Arbeitsspeichergröße fließt mit in das Ergebnis ein. Derzeit berechnet AWS in der Region Frankfurt (eu-central-1) Kosten von 0,0000166667 US-Dollar pro GB-Sekunde\cite{noauthor_lambda_nodate}. Zusätzlich müssen pro 1.000.000 Ausführungen im Monat noch einmal 0,20 US-Dollar Anforderungsgebühren gezahlt werden. AWS bietet ein kostenloses Nutzenkontingent von 400.000 Aufrufen pro Funktion im Monat an.
 
 Für die Ausführung der Lambda-Funktionen wird ein Event-Auslöser für REST-Anfragen benötigt. Dazu wurde in dieser Arbeit Amazon API Gateway verwendet, welches eingehende Requests auf die vorgesehene Lambda-Funktion weiterleitet. Für die Nutzung des API Gateways fallen extra Kosten an. Bei Nutzung des Serverless Frameworks wird automatisch eine API des Typs REST erstellt. Es fallen für die Verwendung dieses API-Typs Kosten von 3,70 Euro pro einer Millionen Aufruf an. Diese werden für jede API gezählt und gelten damit nicht für jede einzelne aufgerufene Lambda-Funktion. Es gibt Vergünstigungen ab 333 Millionen Aufrufen im Monat. Zuzügliche Preise für Caching werden hierbei nicht einberechnet. AWS bietet für das API Gateway ebenso ein kostenloses Nutzenkontingent von einer Millionen Aufrufen im Monat\cite{noauthor_amazon_nodate}.
 
@@ -197,4 +212,19 @@ Die folgende Übersicht zeigt die Kosten pro 1.000.000 Aufrufe für die untersch
     \item 256MB = 4,19\$
     \item 512MB = 4,48\$
     \item 1024M = 5,07\$
+\end{itemize}
+
+Da bei Lambda im  Gegensatz zu ECS/Fargate nur die tatsächlich aktive Zeit der Funktion berechnet wird, lässt sich grob abschätzen, wie viele Funktionsaufrufe zu dem gleichen Preis der Fargate Nutzung von einem Container möglich sind (siehe vorherige Sektion). Die Umstellung der Formel ergibt:
+
+\begin{equation}
+Aufrufe = \frac{Kosten}{\frac{MedianMs}{1000ms} * \frac{FunktionsMb}{1024Mb} * 0,0000166667\$ + \frac{0,20\$ + 3,70\$}{1.000.000}}
+\end{equation}
+
+Ausgehend von den Kosten der Container Varianten und einer Medianen Antwortzeit von 70ms ergeben sich folgende Werte: 
+
+\begin{itemize}
+    \item 128MB (10,22\$): 2.526.055 Aufrufe
+    \item 256MB (10,22\$): 2.438.170 Aufrufe
+    \item 512MB (20,44\$): 4.559.106 Aufrufe
+    \item 1024MB (40,88\$): 8.068.417 Aufrufe
 \end{itemize}
