@@ -54,7 +54,11 @@ for path, concat in concats.items():
     print(f'Path {path}')
     print(round(concats[path].describe(), 2))
     print(round(concats[path].quantile(q=[0.9, 0.95]), 2))
-    print()
+
+    mean = concats[path].mean()
+    std = concats[path].std()
+
+    print(f"Variationskoeff: {round(std / mean, 2)}")
 
 # show plot of both folders
 if len(paths) == 2:
