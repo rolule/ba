@@ -1,3 +1,0 @@
-# specify the urls of the services here (not ending in slash)
-lambda: https://znow28tm8i.execute-api.eu-central-1.amazonaws.com/dev
-fargate: http://ec2co-ecsel-16bx0kakxu2bo-1375260972.eu-central-1.elb.amazonaws.com
