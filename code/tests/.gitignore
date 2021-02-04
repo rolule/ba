@@ -5,3 +5,5 @@ fargate/**/*.json
 lambda/**/*.json
 fargate/**/*.csv
 lambda/**/*.csv
+config.yaml
+config.yml
