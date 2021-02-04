@@ -243,6 +243,7 @@ async function start() {
 
   const tarArchiveName = `${fileName}.tar.gz`;
   const tarArchivePath = `${outputFolder}/${tarArchiveName}`;
+  const commitMsg = `Add test: ${serviceType.toUpperCase()} ${totalTaskMemory}MB UC-${useCaseName.toUpperCase()} ${strategyName}`;
 
   if(log){
     console.log(`k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`);
@@ -306,7 +307,6 @@ async function start() {
 
           // git add ouput folder if it exists and commit
           if (fs.existsSync(outputFolder) && !debug) {
-            const commitMsg = `Add test: ${serviceType.toUpperCase()} ${totalTaskMemory}MB UC-${useCaseName.toUpperCase()} ${strategyName}`;
             console.log(commitMsg);
             exec(`git add ${tarArchivePath} && git commit -m "${commitMsg}"`, (error, stdout, stderr) => {
               if (error) {
