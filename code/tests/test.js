@@ -177,7 +177,7 @@ async function start() {
     const { strategy } = await prompt.get({
       properties: {
         strategy: {
-          pattern: new RegExp(`^[1-9]+$`),
+          pattern: new RegExp(`^[0-9]+$`),
           required: true,
         },
       },
