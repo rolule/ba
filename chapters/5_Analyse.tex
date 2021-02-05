@@ -103,34 +103,50 @@ Für Use-Case B (Abbildung \ref{fig:lambda-ucb-load600-vs-spike600-example}) sie
 Da die Antwortzeiten des Spike-Test trotz des dreimal schnelleren Anstiegs dennoch äußerst nah bei denen des Load-Tests liegen, lässt sich entgegen H1 annehmen, dass ein schneller Spike-Load kaum eine Veränderung der Antwortzeit mit sich bringt. Bei größeren Nutzerzahlen könnte dieser Effekt jedoch größer ausfallen.
 
 
-\section{256MB Konfigurationen}
-Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 256 Megabyte untersucht werden. Ziel dessen ist es, Unterschiede zu den in der vorangegangenen Sektion getesteten Konfigurationen zu erkennen.
+\section{Andere Konfigurationen}
+Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 256 und 512 Megabyte untersucht werden. Ziel dessen ist es, Unterschiede zu den in der vorangegangenen Sektion getesteten Konfigurationen zu erkennen.
 
 \subsection{Pipe-Clean Tests}
-Wie in Abbildung \ref{fig:pipe256-comparison} zu sehen ist, konnte keine Veränderung der Pipe-Clean Performance für die größere Variante festgestellt werden; weder für den Container noch für die Lambda-Funktionen.
+Abbildung \ref{fig:pipe-comparison} zeigt die Pipe-Clean Tests der unterschiedlich großen Konfigurationen der Lambda Funktion für die Use-Cases A und B.
+
 \begin{figure}[H]
-    \includegraphics[width=\textwidth]{img/pipe256-comparison.png}
-    \caption[Vergleich der Pipe-Clean Tests für 256MB]{Vergleich der Pipe-Clean Tests für 256MB}
-    \label{fig:pipe256-comparison}
+    \includegraphics[width=\textwidth]{img/pipe-comparison.png}
+    \caption[Vergleich der Pipe-Clean Tests]{Vergleich der Pipe-Clean Tests}
+    \label{fig:pipe-comparison}
 \end{figure}
 
-\subsection{Stress-Tests}
-Unter Annahme von H3 wird davon ausgegangen, dass der Container 256MB Speicher und CPU-Größe doppelt so viele Anfragen verarbeiten kann wie der Container mit 128MB. Da der kleinere Container bis zu 700 Benutzer bedienen konnte, wird im folgenden ein Stress-Test mit bis zu 1500 Benutzern durchgeführt, für den Fall dass er mehr als doppelt so viel verarbeiten kann.
+Es wird deutlich, dass fast keine Unterschiede zwischen den drei Ausführungen bestehen. Die mediane Antwortzeit liegt für Use-Case A um die 100ms; bei Use-Case B zwischen 98 und 99ms. Auch die P(90) und P(95) Quantile variieren zwar leicht zwischen den Tests der verschiedenen Konfigurationen, liegen jedoch nahe bei einander. Es konnten außerdem keine Unterschiede in der Coldstart-Dauer festgestellt werden. 
+Allerdings ist zu erkennen, dass die maximale Funktionsdauer bei den größeren Konfigurationen deutlich geringer wird und sich dem minimalen Wert von 50ms annähert. Während der Wert für Use-Case A und die 128MB Funktion noch bei 153.57ms liegt, sinkt er für die 256MB Funktion auf nur noch 81.35ms herab. Für die 512MB Variante ist der Wert bereits unter 60ms abgesunken. Ähnliches ist für die anderen beiden Use-Cases festzustellen (Use-Case C wird aus Platzgründen nicht gezeigt).
 
+\subsection{Stress- und Load-Tests}
+Unter Annahme von H3 wird davon ausgegangen, dass der Container 256MB Speicher und CPU-Größe doppelt so viele Anfragen verarbeiten kann wie der Container mit 128MB. Da der kleinere Container bis zu 700 Benutzer bedienen konnte, wurde im folgenden ein Stress-Test mit bis zu 1500 Benutzern durchgeführt, für den Fall dass er mehr als doppelt so viel verarbeiten kann.
 Trotz des doppelt so großen Speichers und vCPUs konnte jedoch keine Verbesserung der maximalen Benutzer für die Container-Instanz erreicht werden. Genau wie der 128MB Container begann die Antwortzeit des 256MB Container bei ca. 700 VUs stark anzusteigen. Die Hypothese H3 kann also für diesen Fall nicht bestätigt werden.
 
-Die Lambda-Tests wurden für diese Konfiguration nicht durchgeführt, da keine Verbesserung gegenüber der 128MB Variante zu vermutet wird.
+Die Stress-Tests für die Lambda Funktion wurden für diese Konfiguration nicht durchgeführt, da keine Verbesserung gegenüber der 128MB Variante zu vermutet wird. 
 
-\section{512MB Konfigurationen}
-Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 512 Megabyte untersucht werden. 
+Im Anschluss wurden die Last- bzw. Spike Tests durchgeführt, um diese mit der 128MB Variante zu vergleichen. Als VU-Limit wurde erneut 600 festgelegt. Dies ermöglicht einen einfachen Vergleich der beiden Varianten.
+Auch hier konnte für die Container-Anwendung keine Unterschiede zu der kleineren Konfiguration festgestellt werden. 
 
-\subsection{Pipe-Clean Tests}
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/lambda128+256-ucb-load600-vs-spike600-graph.png}
+    \caption[Lambda 128MB und 256MB Vergleich der Load- und Spike-Tests]{Lambda 128 und 256MB Vergleich der Load- und Spike-Tests}
+    \label{fig:lambda128+256-ucb-load600-vs-spike600-graph}
+\end{figure}
 
-\subsection{Stress-Tests}
-Ein Stress-Test des Containers mit bis zu 1500 Benutzern, ergab für Use-Case A, dass die Antwortzeit des Containers ab einer VU-Anzahl von ca. 1400 Benutzern deutlich zunimmt. Mit Eintreten der 1400 Benutzer erreichte das Container Cluster ebenso eine CPU-Auslastung von 100 Prozent. Für Use-Case B musste ein weiterer Stress-Test durchgeführt werden, da bei 1500 Benutzern nur eine CPU-Auslastung von 58\% erreicht werden konnte. Der zweite Stress-Test wurde mit bis zu 2400 Benutzern durchgeführt. Bei ca. 2350 VUs wurde die maximale Auslastung des Containers erreicht.
+Wie in Abbildung \ref{fig:lambda128+256-ucb-load600-vs-spike600-graph} zu erkennen ist, sind bei der 256MB Variante im Gegensatz zu der 128MB Konfiguration keine wesentliche Unterschiede zwischen den Load- und Spike Tests zu erkennen (Use-Case B abgebildet). Es fällt auf, dass die größeren Funktionen nahezu gar nicht von der Skalierung betroffen sind, sondern die Antwortzeit beständig zwischen 75 und 80ms liegt. Im Vergleich zu der kleineren Variante, verkleinerte sich auch der Variationskoeffizient von 0,22 auf 0,17. Wie schon bei den Pipe-Clean Tests zu sehen war, sank auch die maximale Funktionsdauer von über 600ms bei 128MB auf unter 300ms ab. Bei der Antwortzeit im Median und der Coldstart-Dauer konnte auch hier keine Veränderung festgestellt werden.
 
-Im Anschluss an die Stress-Tests des Containers wurden diese mit den gleichen Konfigurationen gegen die Lambda-Anwendung durchgeführt. 
 
+Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 512 Megabyte untersucht werden. Ein Stress-Test des Containers mit bis zu 1500 Benutzern, ergab für Use-Case A, dass die Antwortzeit des Containers ab einer VU-Anzahl von ca. 1400 Benutzern deutlich zunimmt. Mit Eintreten der 1400 Benutzer erreichte das Container Cluster ebenso eine CPU-Auslastung von 100 Prozent. Für Use-Case B musste ein weiterer Stress-Test durchgeführt werden, da bei 1500 Benutzern nur eine CPU-Auslastung von 58\% erreicht werden konnte. Der zweite Stress-Test wurde mit bis zu 2400 Benutzern durchgeführt. Bei ca. 2350 VUs wurde die maximale Auslastung des Containers erreicht.
+
+Im Anschluss an die Stress-Tests des Containers wurden diese mit den gleichen Konfigurationen gegen die Lambda-Anwendung durchgeführt.
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/512MB-stress-comparison.png}
+    \caption[Vergleich der Stress-Tests für 512MB Konfigurationen]{Vergleich der Stress-Tests für 512MB Konfigurationen}
+    \label{fig:512MB-stress-comparison}
+\end{figure}
+
+Abbildung \ref{fig:512MB-stress-comparison} zeigt das Ergebnis der Stress-Tests für die Use-Cases A und B. Der Container konnte dabei erneut, trotz Überlastung, geringfügig mehr Requests verarbeiten als die Lambda-Funktionen. Die Antwortzeit der Lambda-Funktionen pendelte sich, wie schon bei der 256MB Funktion, bei ca. 77ms ein. Auch der Variationskoeffizient lag erneut bei 0,17. Auffällig ist die hohe Fehleranzahl von 76 HTTP-502-Statuscodes, die bei der Container-Anwendung für Use-Case B auftraten. Die maximale Funktions-Dauer war im Vergleich mit den Stress-Tests der 256MB Lambda-Funktionen erneut deutlich niedriger.
 
 
 \section{Skalierung und Optimierung}
