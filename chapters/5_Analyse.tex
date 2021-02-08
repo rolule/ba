@@ -18,7 +18,7 @@ Abbildung \ref{fig:pipe128-comparison} zeigt die Ergebnisse des Tests für die F
 Anhand der Vergleichstabelle lassen sich auch Erkenntnisse über die einzelnen Use-Cases ableiten. Use-Case A setzt sowohl bei der Container- als auch bei der Lambda-Anwendung deutlich mehr Requests in der Sekunde ab als es bei den Use-Cases B und C der Fall ist. Dies liegt an der größeren Think-Time, wie sie bei den Use-Cases mit Benutzer-Eingaben zum Einsatz kommt.
 
 \subsection{Stress-Tests}
-Um RQ1 zu beantworten, muss zunächst die maximale Auslastung eines einzelnen Containers ermittelt werden. Dazu wurden mehrere Stress-Tests durchgeführt. Ein Stress-Test dient dazu, die Grenzen des SUTs herauszufinden. Da Lambda ein von Natur aus automatisch horizontal skalierendes System ist, werden die Test zunächst für die Container-Anwendung durchgeführt und im Anschluss die Lambda-Anwendung mit der gleichen Test-Konfiguration getestet. Dadurch kann das Verhalten der Funktionen bei langsamem Anstieg der Benutzer evaluiert werden. Die Anzahl der VUs wird bei den Stress-Tests wie von Molyneaux\cite{molyneaux_art_2014} empfohlen immer stufenweise erhöht. Das bedeutet, dass nach jedem Ramp-Up (ein linearer Anstieg) eine gleichlange Periode mit einer konstanten Anzahl an Benutzern folgt. Abbildung \ref{fig:stress-vus-example} verdeutlicht dies anhand eines Stress-Tests, bei dem bis zu 600 gleichzeitige Virtuelle Benutzer erstellt werden. In 60 Sekunden Zeitabschnitten werden nach und nach immer 60 Benutzer hinzugefügt. Daraufhin folgt eine weitere 60 Sekunden lange Periode, in der die Anzahl der VUs nicht weiter erhöht wird. Der gesamte Test hat demnach eine Dauer von 40 Minuten. Eine Cooldown-Phase nach den vollen 600 Benutzern wird hier nicht eingelegt, da das Skalierungsverhalten nicht untersucht wird.
+Um RQ1 zu beantworten, muss zunächst die maximale Auslastung eines einzelnen Containers ermittelt werden. Dazu wurden mehrere Stress-Tests durchgeführt. Ein Stress-Test dient dazu, die Grenzen des SUTs herauszufinden. Da Lambda ein von Natur aus automatisch horizontal skalierendes System ist, werden die Test zunächst für die Container-Anwendung durchgeführt und im Anschluss die Lambda-Anwendung mit der gleichen Test-Konfiguration getestet. Die Anzahl der VUs wird bei den Stress-Tests wie von Molyneaux\cite{molyneaux_art_2014} empfohlen immer stufenweise erhöht. Das bedeutet, dass nach jedem Ramp-Up (ein linearer Anstieg) eine gleichlange Periode mit einer konstanten Anzahl an Benutzern folgt. Abbildung \ref{fig:stress-vus-example} verdeutlicht dies anhand eines Stress-Tests, bei dem bis zu 600 gleichzeitige Virtuelle Benutzer erstellt werden. In 60 Sekunden Zeitabschnitten werden nach und nach immer 60 Benutzer hinzugefügt. Daraufhin folgt eine weitere 60 Sekunden lange Periode, in der die Anzahl der VUs nicht weiter erhöht wird. Der gesamte Test hat demnach eine Dauer von 40 Minuten. Eine Cooldown-Phase nach den vollen 600 Benutzern wird hier nicht eingelegt, da das Skalierungsverhalten nicht untersucht wird.
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{img/stress-vus-example.png}
@@ -35,7 +35,7 @@ Für die containerisierte Anwendung in der 128MB Konfiguration wurden mehrere St
     \label{fig:fargate128-stress-comparison}
 \end{figure}
 
-Der erste Test wurde mit bis zu 200 Benutzern durchgeführt. Dabei konnte jedoch nur bis zu 32\% der CPU-Auslastung des Container-Clusters erreicht werden; In Use-Case B waren es sogar nur fast 22\%. Der geringen Auslastung entsprechend, war kaum eine Veränderung der Antwortzeiten gegenüber den Pipe-Clean Tests festzustellen (vgl. mit Abbildung \ref{fig:pipe128-comparison}). Einige Metriken lagen sogar unter den Grundwerten. Lediglich die maximale Antwortzeit hat sich bei allen Use-Cases, bspw. bei Use-Case A von 60,46ms auf 364,93ms, deutlich erhöht. Dies ist allerdings nur vereinzelt der Fall, da immer noch 95\% aller Anfragen innerhalb von ca. 62ms beantwortet werden und auch an der Standardabweichung hat sich nicht großartig verändert. 
+Der erste Test wurde mit bis zu 200 Benutzern durchgeführt. Dabei konnte jedoch nur bis zu 32\% der CPU-Auslastung des Container-Clusters erreicht werden; In Use-Case B waren es sogar nur fast 22\%. Der geringen Auslastung entsprechend, war kaum eine Veränderung der Antwortzeiten gegenüber den Pipe-Clean Tests festzustellen (vgl. mit Abbildung \ref{fig:pipe128-comparison}). Einige Metriken lagen sogar unter den Grundwerten. Lediglich die maximale Antwortzeit hat sich bei allen Use-Cases, bspw. bei Use-Case A von 60,46ms auf 364,93ms, deutlich erhöht. Dies ist allerdings nur vereinzelt der Fall, da immer noch 95\% aller Anfragen innerhalb von ca. 62ms beantwortet werden. Der Variationskoeffizient stieg leicht an. 
 
 Bei dem zweiten Stress-Test mit bis zu 600 VUs, änderte sich nicht viel im Vergleich zu dem Test mit 200 Benutzern. Es konnten zwar bis zu 84,93 Prozent CPU-Auslastung erreicht werden und die maximale Antwortzeit stieg erneut an, auf fast 500ms. Trotz dessen konnten von dem einzelnen Container 95\% der Anfragen innerhalb von knapp 63ms beantwortet werden. Problematisch zeigten sich hier drei Requests, die vom Server nicht mehr beantwortet werden konnten und den 502 Fehlercode zurücksendeten. Dies entspricht jedoch nur 0,00042\% aller in diesem Stress-Test durchgeführten Requests.
 
@@ -45,7 +45,7 @@ Bei dem zweiten Stress-Test mit bis zu 600 VUs, änderte sich nicht viel im Verg
     \label{fig:fargate128-stress1000}
 \end{figure}
 
-Der dritte Stress-Test für den 128MB Container wurde mit bis zu 1000 VUs durchgeführt. Abbildung \ref{fig:fargate128-stress1000} zeigt den zeitlichen Verlauf dieses Tests für Use-Case A. Es wird dabei die Anzahl der virtuellen Benutzer und die Antwortzeit im Median pro Sekunde dargestellt. Es wird deutlich, dass die Antwortzeit ab ca. 700 VUs deutlich ansteigt. Dies deckt sich der von AWS Cloudwatch gemessenen CPU-Auslastung von knapp unter 100\% die bei dieser Nutzerzahl gemessen wurde. In den Perioden mit konstanten Nutzerzahlen können die Requests besser verarbeitet werden und die Kurve geht wieder leicht herunter. Während des Tests wurden trotz einer CPU-Auslastung von teilweise 100\% nur 31 HTTP 502 Fehlercodes vom Server ausgelöst, was einer Quote von 0,0027\% entspricht. Die Antwortzeit konnte im Median weiterhin bei etwa 60ms gehalten werden; die durchschnittliche Antwortzeit stieg mit 116,8ms auf fast das doppelte des Grundwertes an.  
+Der dritte Stress-Test für den 128MB Container wurde mit bis zu 1000 VUs durchgeführt. Abbildung \ref{fig:fargate128-stress1000} zeigt den zeitlichen Verlauf dieses Tests für Use-Case A. Es wird dabei die Anzahl der virtuellen Benutzer und die Antwortzeit im Median pro Sekunde dargestellt. Es wird deutlich, dass die Antwortzeit ab ca. 700 VUs deutlich ansteigt. Dies deckt sich der von AWS Cloudwatch gemessenen CPU-Auslastung von knapp unter 100\% die bei dieser Nutzerzahl gemessen wurde. In den Perioden mit Anstieg der VUS steigt auch die Antwortzeit. In jeder Periode mit konstanten Nutzerzahlen können die Requests besser verarbeitet werden und die Kurve geht leicht herunter. Während des Tests wurden trotz einer CPU-Auslastung von teilweise 100\% nur 31 HTTP 502 Fehlercodes vom Server ausgelöst, was einer Quote von 0,0027\% entspricht. Die Antwortzeit konnte im Median weiterhin bei etwa 60ms gehalten werden; die durchschnittliche Antwortzeit stieg mit 116,8ms auf fast das doppelte des Grundwertes an.  
 Bei Use-Case B lag die erreichte Prozessor-Auslastung bei 93,14\%. So wurden keine deutlichen Abweichungen ausgelöst. Die Standardabweichung stieg leicht an, liegt aber immer noch deutlich unter dem Wert des Pipe-Clean Tests der 128MB Lambda Funktion.
 
 \subsubsection{Lambda}
@@ -103,15 +103,16 @@ Für Use-Case B (Abbildung \ref{fig:lambda-ucb-load600-vs-spike600-example}) sie
 Da die Antwortzeiten des Spike-Test trotz des dreimal schnelleren Anstiegs dennoch äußerst nah bei denen des Load-Tests liegen, lässt sich entgegen H1 annehmen, dass ein schneller Spike-Load kaum eine Veränderung der Antwortzeit mit sich bringt. Bei größeren Nutzerzahlen könnte dieser Effekt jedoch größer ausfallen.
 
 
-\section{Andere Konfigurationen}
+\section{Andere Konfigurationen (RQ3)}
 Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 256 und 512 Megabyte untersucht werden. Ziel dessen ist es, Unterschiede zu den in der vorangegangenen Sektion getesteten Konfigurationen zu erkennen.
 
 \subsection{Pipe-Clean Tests}
+Für die Pipe-Clean Tests der Container konnte keine Veränderung zur 128MB Variante festgestellt werden. Die Antwortzeit bewegte sich im Median erneut um die 60ms und auch der Variationskoeffizient zeigte mit ca. 0,01 auch kaum eine Veränderung.
 Abbildung \ref{fig:pipe-comparison} zeigt die Pipe-Clean Tests der unterschiedlich großen Konfigurationen der Lambda Funktion für die Use-Cases A und B.
 
 \begin{figure}[H]
     \includegraphics[width=\textwidth]{img/pipe-comparison.png}
-    \caption[Vergleich der Pipe-Clean Tests]{Vergleich der Pipe-Clean Tests}
+    \caption[Vergleich der Pipe-Clean Tests für Lambda]{Vergleich der Pipe-Clean Tests für Lambda}
     \label{fig:pipe-comparison}
 \end{figure}
 
@@ -133,7 +134,7 @@ Auch hier konnte für die Container-Anwendung keine Unterschiede zu der kleinere
     \label{fig:lambda128+256-ucb-load600-vs-spike600-graph}
 \end{figure}
 
-Wie in Abbildung \ref{fig:lambda128+256-ucb-load600-vs-spike600-graph} zu erkennen ist, sind bei der 256MB Variante im Gegensatz zu der 128MB Konfiguration keine wesentliche Unterschiede zwischen den Load- und Spike Tests zu erkennen (Use-Case B abgebildet). Es fällt auf, dass die größeren Funktionen nahezu gar nicht von der Skalierung betroffen sind, sondern die Antwortzeit beständig zwischen 75 und 80ms liegt. Im Vergleich zu der kleineren Variante, verkleinerte sich auch der Variationskoeffizient von 0,22 auf 0,17. Wie schon bei den Pipe-Clean Tests zu sehen war, sank auch die maximale Funktionsdauer von über 600ms bei 128MB auf unter 300ms ab. Bei der Antwortzeit im Median und der Coldstart-Dauer konnte auch hier keine Veränderung festgestellt werden.
+Für die Lambda-Funktionen sind bei der 256MB Variante im Gegensatz zu der 128MB Konfiguration keine wesentliche Unterschiede zwischen den Load- und Spike Tests zu erkennen. Wie in Abbildung \ref{fig:lambda128+256-ucb-load600-vs-spike600-graph} Use-Case B zu erkennen ist, fällt auf, dass die größeren Funktionen nahezu gar nicht von der Skalierung betroffen sind, sondern die Antwortzeit beständig zwischen 75 und 80ms liegt. Im Vergleich zu der kleineren Variante, verkleinerte sich auch der Variationskoeffizient von 0,22 auf 0,17. Wie schon bei den Pipe-Clean Tests zu sehen war, sank auch die maximale Funktionsdauer von über 600ms bei 128MB auf unter 300ms ab. Bei der Antwortzeit im Median und der Coldstart-Dauer konnte auch hier keine Veränderung festgestellt werden.
 
 
 Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 512 Megabyte untersucht werden. Ein Stress-Test des Containers mit bis zu 1500 Benutzern, ergab für Use-Case A, dass die Antwortzeit des Containers ab einer VU-Anzahl von ca. 1400 Benutzern deutlich zunimmt. Mit Eintreten der 1400 Benutzer erreichte das Container Cluster ebenso eine CPU-Auslastung von 100 Prozent. Für Use-Case B musste ein weiterer Stress-Test durchgeführt werden, da bei 1500 Benutzern nur eine CPU-Auslastung von 58\% erreicht werden konnte. Der zweite Stress-Test wurde mit bis zu 2400 Benutzern durchgeführt. Bei ca. 2350 VUs wurde die maximale Auslastung des Containers erreicht.
@@ -147,6 +148,17 @@ Im Anschluss an die Stress-Tests des Containers wurden diese mit den gleichen Ko
 \end{figure}
 
 Abbildung \ref{fig:512MB-stress-comparison} zeigt das Ergebnis der Stress-Tests für die Use-Cases A und B. Der Container konnte dabei erneut, trotz Überlastung, geringfügig mehr Requests verarbeiten als die Lambda-Funktionen. Die Antwortzeit der Lambda-Funktionen pendelte sich, wie schon bei der 256MB Funktion, bei ca. 77ms ein. Auch der Variationskoeffizient lag erneut bei 0,17. Auffällig ist die hohe Fehleranzahl von 76 HTTP-502-Statuscodes, die bei der Container-Anwendung für Use-Case B auftraten. Die maximale Funktions-Dauer war im Vergleich mit den Stress-Tests der 256MB Lambda-Funktionen erneut deutlich niedriger.
+
+\section{Mehrere Container (RQ4)}
+Für die Untersuchung inwiefern sich die Anzahl der aktiven Container auf die Performance auswirkt, wurde ein Test mit der Fargate 256MB Task-Definition durchgeführt. Dazu wurden zwei Container-Instanzen gestartet und den gleichen Stress-Tests unterzogen wie die einzelne 512MB Container-Instanz. Abbildung \ref{fig:fargate-512-vs-2x256-stress-comparison} zeigt das Ergebnis des Tests.
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/fargate-512-vs-2x256-stress-comparison.png}
+    \caption[Vergleich einer 512MB Instanz mit zwei 256MB Instanzen]{Vergleich einer 512MB Instanz mit zwei 256MB Instanzen}
+    \label{fig:fargate-512-vs-2x256-stress-comparison}
+\end{figure}
+
+In diesem Test wird kein Unterschied in der Performance einer einzelnen 512MB Instanz zu zwei 256MB Instanzen deutlich.
 
 
 \section{Skalierung und Optimierung}
@@ -175,6 +187,7 @@ Es gibt darüber hinaus vielfältige Wege, die Coldstart Zeit einer Lambda-Funkt
 Lambda ist also auch nicht ohne weiteres eine Blaupause für jede beliebige Anwendung. Es lässt sich für jede Funktion eine vor-provisionierte Concurrency, Autoscaling und die Größe der Funktion einstellen. 
 
 \section{Kosten}
+In dieser Sektion sollen die für die Nutzung der in dieser Arbeit getesteten AWS Services anfallenden Kosten untersucht werden.
 
 \subsection{Container}
 Wie schon in der vorherigen Sektion erwähnt gibt es viele verschiedene Wege, Container-Anwendungen in der Public Cloud zu betreiben. Für die Kosten-Schätzung werden deshalb nur der Betrieb der Anwendung mit AWS ECS Fargate-Starttyp und Amazon Elastic Kubernetes Service betrachtet.

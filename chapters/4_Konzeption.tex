@@ -1,9 +1,9 @@
 \chapter{Konzeption}
-In diesem Kapitel werde ich die grundlegende Konzeption der Arbeit vorstellen.
+In diesem Kapitel wird die grundlegende Konzeption der Arbeit vorgestellt.
 
 \section{Methodisches Vorgehen}
 Es soll eine Beispielanwendung sowohl Containerisiert als auch Serverless entwickelt werden. Die Konzeption dieser beiden Anwendungen wird in den folgenden Abschnitten genauer beschrieben. 
-Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und die Ergebnisse miteinander verglichen. Die Forschungsfrage wurde dazu in kleinere Teilfragen aufgeteilt, die im Laufe der Analyse untersucht werden sollen:
+Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und die Ergebnisse miteinander verglichen. Die Forschungsfrage wurde dazu in kleinere Teilfragen (Research-Questions RQ1 bis RQ5) aufgeteilt, die im Laufe der Analyse untersucht werden sollen:
 
 \begin{enumerate}
     \item[RQ1] Wie vielen nebenläufige Lambda-Funktionen werden benötigt, um den maximalen Load einer einzigen Container-Instanz zu tragen?
@@ -62,9 +62,9 @@ Abbildung \ref{fig:serverless-testing-architektur} zeigt das Setup der mit der S
     \label{fig:serverless-testing-architektur}
 \end{figure}
 
-Der von Serverless bzw. CloudFormation erstellte Anwendungs-Stack beinhaltet ein Amazon API-Gateway, das über die Routen der REST-Schnittstelle verfügt. Trifft eine HTTP-Anfrage an eine der Routen ein, übernimmt das API-Gateway die Auslösung des passenden Events, wodurch der Lambda-Service die korrekte Lambda-Funktion startet und mit den vom Benutzer im HTTP-Request übergebenen Parametern aufruft. Nach Beendigung der Funktion wird ihr Rückgabewert über das API-Gateway zurück an den Benutzer gesendet.
+Der von Serverless bzw. CloudFormation erstellte Anwendungs-Stack beinhaltet ein Amazon API-Gateway, das über die Routen der REST-Schnittstelle verfügt. Trifft eine HTTP-Anfrage an eine der Routen ein, übernimmt das API-Gateway die Auslösung des passenden Events, wodurch der Lambda-Service die korrekte Lambda-Funktion startet und mit den vom Benutzer im HTTP-Request übergebenen Parametern aufruft. Nach Beendigung der Funktion wird ihr Rückgabewert über das API-Gateway zurück an den Benutzer gesendet. Jeder Start einer Lambda-Funktion erfordert das Herunterladen des Codes, der in der Funktion ausgeführt werden soll. Dazu wird der Code vom Serverless-Framework in einen Amazon S3-Bucket hochgeladen und bei Bedarf vom Lambda-Service angefordert.
 
-Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Denn auch wenn man sich zwar nicht mehr um Server kümmern muss, ist dennoch die Konfiguration des API-Gateways notwendig, da Lambda Funktionen nur über ein Auslöse-Event gestartet werden können. Zusätzlich minimiert das Framework den geschriebenen JavaScript Code mittels Webpack und erhöht so die Performance der Lambda-Funktion.
+Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Die Konfiguration des API-Gateways und des S3-Buckets werden automatisch erledigt. Zusätzlich minimiert das Framework den geschriebenen JavaScript Code mittels Webpack und erhöht so die Performance der Lambda-Funktion.
 
 \subsection{Container}
 Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
@@ -87,6 +87,8 @@ Um die Performance der eben vorgestellten Anwendungen zu testen, wird das Open-S
 
 Als Load-Generator wird eine in der AWS Region Paris (eu-west-3) stationierte EC2 Instanz des Typs t3.xlarge verwendet.
 Nach eigenen Angaben benötigt k6 für jeden virtuellen Benutzer und für einen kleinen Test eine Speicherauslastung zwischen 1 und 5 Megabyte\cite{noauthor_running_nodate}. Da die verwendete t3.xlarge Instanz 16 Gigabyte RAM beinhaltet, sollten theoretisch mehr als 3200 und maximal 16.000 gleichzeitige virtuelle Benutzer von der Testumgebung unterstützt werden. Die Instanz weist eine Netzwerkleistung von bis zu 5 Gbit/s auf, welche bei jeder Testausführung mittels des Tools iftop überwacht wird, um sicherzugehen, dass das Netzwerk nicht zum Flaschenhals wird. Auch die CPU Auslastung wird mittels htop überprüft.
+
+Die Tests werden ausgeführt, indem vom Entwicklungscomputer eine SSH Verbindung zum Load-Generator aufgebaut wird. Dann wird der Test-Code über das GitHub-Repository heruntergeladen. Zur Ausführung der Tests und automatisch komprimierter Speicherung der Test-Artefakte im Repository wurde ein Node.js Skript geschrieben, welches unter "`test.js"' zu finden ist. Das Skript liest von der Kommandozeile die Parameter des aktuellen Tests ein und startet dann k6 mit dem vom Benutzer ausgewählten Test-Szenario.
 
 \subsection{Metriken}
 Das Testing-Tool k6 speichert für jeden Request an einen bestimmten API-Endpunkt unter anderem Werte folgender Metriken:
