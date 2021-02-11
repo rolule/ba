@@ -3,28 +3,28 @@ In diesem Kapitel wird die grundlegende Konzeption der Arbeit vorgestellt.
 
 \section{Methodisches Vorgehen}
 Es soll eine Beispielanwendung sowohl Containerisiert als auch Serverless entwickelt werden. Die Konzeption dieser beiden Anwendungen wird in den folgenden Abschnitten genauer beschrieben. 
-Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und die Ergebnisse miteinander verglichen. Die Forschungsfrage wurde dazu in kleinere Teilfragen (Research-Questions RQ1 bis RQ5) aufgeteilt, die im Laufe der Analyse untersucht werden sollen:
+Im Anschluss werden Performance Tests gegen beide Anwendungen durchgeführt und die Ergebnisse miteinander verglichen. Die Forschungsfrage wurde dazu in kleinere Teilfragen (Research-Questions RQ1 bis RQ5) aufgeteilt, die im Laufe der Analyse untersucht werden sollen. Dazu wurden Annahmen (H1 bis H4) formuliert:
 
 \begin{enumerate}
-    \item[RQ1] Wie vielen nebenläufige Lambda-Funktionen werden benötigt, um den maximalen Load einer einzigen Container-Instanz zu tragen?
+    \item[RQ1] Wie viel Load kann eine einzige Container-Instanz tragen und wie vielen nebenläufigen Lambda-Funktionen entspricht das?
     
     \item[RQ2] Wie ist die Performance bei normalem Load oder bei Spike Load? \\
     H1: Die Performance einer Lambda Funktion stagniert unter Spike Load stark, während sie bei einem Container gleich bleibt.
 
     \item[RQ3] Welchen Einfluss hat die Nutzung größerer CPU / RAM Werte? \\
-    H3: Ein Container kann bei einer Verdopplung doppelt so viele Anfragen verarbeiten.
+    H2: Ein Container kann bei einer Verdopplung doppelt so viele Anfragen verarbeiten.
     
     \item[RQ4] Welchen Einfluss hat die Nutzung mehrerer Container Instanzen auf die Performance? \\
-    H4: Die Performance steigt linear mit jedem neuen Container an
+    H3: Die Performance steigt linear mit jedem neuen Container an
     
     \item[RQ5] Welchen Einfluss hat die ein Use-Case, der mehreren Endpunkten anfragt\\
-    H5: Bei Lambda großer Einfluss, da jede Funktion einzeln einen Coldstart machen muss
+    H4: Bei Lambda großer Einfluss, da jede Funktion einzeln einen Coldstart machen muss
 \end{enumerate}
 
 Das methodische Vorgehen für den Aufbau der Test-Umgebung basiert dabei grundlegend auf den von Papadopoulus et. al. vorgestellten methodologischen Prinzipien für reproduzierbare Performanz-Evaluation im Cloud Computing Umfeld, die im folgenden beschrieben werden\cite{papadopoulos_methodological_2019}:
 
 \begin{enumerate}
-    \item[P1] Wiederholte Durchführung (Repeated experiments): Mehrere Experimente mit der selben Konfiguration durchführen. 
+    \item[P1] Wiederholte Durchführung (Repeated experiments): Mehrere Experimente mit der selben Konfiguration durchführen. In dieser Arbeit wird jeder Test mindestens zwei mal durchgeführt, um einmalige Aussetzer erkennen zu können.
     \item[P2] Konfigurations-Abdeckung (Workload and configuration coverage): Experimente in verschiedenen Konfigurationen der relevanten Parameter durchführen. Beispielsweise verschiedene Hardware-Konfigurationen aber auch verschiedene Load-Testing-Typen (z.B. Spike Test)
     \item[P3] Experimenteller Aufbau (Experimental setup description): Beschreibung der Hardware- und Software (inklusive Version), und anderer Parameter die für das Experiment genutzt wurden und einen Einfluss auf dessen Ausgang haben können. Zusätzlich sollte die Beschreibung das genaue Ziel des Experiments beinhalten.
     \item[P4] Offener Zugang zu Artefakten (Open access artifact): Möglichst viele für die Experimente genutzten Konfigurationsdateien, Protokolle, etc. sollten versioniert und offen zugänglich sein.
@@ -34,7 +34,7 @@ Das methodische Vorgehen für den Aufbau der Test-Umgebung basiert dabei grundle
     \item[P8] Kosten (Cost): Kostenmodell, Ressourcennutzung und abgerechnete Kosten angeben.
 \end{enumerate}
 
-Das Prinzip P4 wird erfüllt durch die Nutzung eines öffentlichen GitHub Repositories unter https://github.com/rolule/ba. Dort finden sich die Skripte die zur Generierung der Tests verwendet wurden und die Output-Artefakte der Tests.
+Das Prinzip P4 wird erfüllt durch die Nutzung eines öffentlichen GitHub Repositories unter \textit{https://github.com/rolule/ba}. Dort finden sich die Skripte die zur Generierung der Tests verwendet wurden und die Output-Artefakte der Tests.
 
 Im Anschluss an die Performance-Tests wird noch auf Möglichkeiten der Skalierung und die Kosten der beiden Technologien eingegangen.
 
@@ -99,21 +99,24 @@ Das Testing-Tool k6 speichert für jeden Request an einen bestimmten API-Endpunk
     
     \item HTTP-Statuscodes: Geben den Status eines HTTP-Requests an. Wichtig für die Betrachtung sind vor allem die Codes:
         \begin{enumerate}
-            \item 200 (OK): Der Request war erfolgreich.
-            \item 503 (Service Unavailable): Der Server kann den Request nicht bearbeiten. Kann auftreten, wenn zu viele Requests bei einem Service eintreffen und dieser aufgrund mangelnder verfügbarer Ressourcen (CPU / Speicher) nicht in der Lage ist, die Anfrage zu bearbeiten.
+            \item 200 (OK): Der Request war erfolgreich\cite{noauthor_200_nodate}.
+            \item 500 (Internal Server Error): Der Server konnte den Request aufgrund eines nicht vorhergesehenen Problems nicht angemessen verarbeiten\cite{noauthor_500_nodate}.
+            \item 502 (Bad Gateway): Der Server ist überlastet oder kann aus anderen Gründen nicht erreicht werden\cite{noauthor_error_nodate}.
+            \item 503 (Service Unavailable): Der Server ist überlastet oder für Wartungsarbeiten abgeschaltet\cite{noauthor_503_nodate}.
+            \item 504 (Gateway Timeout): Der als Gateway / Proxy agierende Server konnte innerhalb eines festgelegten Zeitintervalls keine Antwort liefern\cite{noauthor_http_nodate}.
         \end{enumerate}
         
     \item Request Rate: Die durchschnittliche Anzahl der Requests pro Sekunde (req / s)
 \end{enumerate}
 
-Für Analysen und Vergleiche mehrerer Test-Ausführungen untereinander, werden die Ergebnisse jedes k6-Tests als CSV-Text-Datei exportiert. Im Anschluss können diese Dateien mit dem Data-Science Framework Pandas\cite{noauthor_pandas_nodate} für die Programmiersprache Python analysiert und verglichen werden. Der Source-Code der Analysen und die Ergebnis-Artefakte der Tests sind im Code-Repository dieser Arbeit zu finden.
+Für Analysen und Vergleiche mehrerer Test-Ausführungen untereinander, werden die Ergebnisse jedes k6-Tests als CSV-Text-Datei exportiert. Im Anschluss können diese Dateien mit dem Data-Science Framework Pandas\cite{noauthor_pandas_nodate} für die Programmiersprache Python analysiert und verglichen werden. Der Source-Code der Analysen und die Ergebnis-Artefakte der Tests sind im Code-Repository dieser Arbeit zu finden (vgl. Anhang \ref{apx:repo}).
 
 \subsection{Test-Typen}
 Bei Performance Tests können verschiedene Testing-Strategien eingesetzt werden.
 \begin{enumerate}
-    \item Load Testing: Dient der Evaluierung der System-Performance in Bezug auf die Anzahl der gleichzeitigen Benutzer oder der Requests-Rate. Es wird der Normalbetrieb des Systems simuliert.
+    \item Load Testing: Dient der Evaluierung der System-Performance in Bezug auf die Anzahl der gleichzeitigen Benutzer oder der Requests-Rate. Es wird der Normalbetrieb des Systems simuliert\cite{noauthor_what_nodate}.
     
-    \item Stress Testing: Dient dazu, die Grenzen des Systems in den Punkten Verfügbarkeit und  Stabilität auszutesten. Man geht über den normalen Betrieb hinaus und eventuell so hoch dass das System der Last nicht mehr standhalten kann. Bei einem Stress-Test wird schrittweise die Last auf das System erhöht. So kann man zum Beispiel herausfinden, ob das System großen Anstürmen, wie z.B einem Sale-Event bei einem Online-Shop, Stand halten kann.
+    \item Stress Testing: Dient dazu, die Grenzen des Systems in den Punkten Verfügbarkeit und  Stabilität auszutesten. Man geht über den normalen Betrieb hinaus und eventuell so hoch dass das System der Last nicht mehr standhalten kann. Bei einem Stress-Test wird schrittweise die Last auf das System erhöht. So kann man zum Beispiel herausfinden, ob das System großen Anstürmen, wie z.B einem Sale-Event bei einem Online-Shop, Stand halten kann\cite{noauthor_what_nodate-2}.
 \end{enumerate}
 
 Es gibt noch weitere Test-Typen wie Smoke- oder Soak-Tests, die allerdings keine Relevanz für die Zielfragen dieser Arbeit haben und daher nicht betrachtet werden.
@@ -142,10 +145,10 @@ Die folgenden Use-Cases werden bei der Analyse der Systems-under-test evaluiert.
 
 \subsection{Ablauf der Tests}
 Alle Tests werden in Abhängigkeit von der Konfiguration der Systeme bezüglich des Speichers oder der Anzahl der Container-Instanzen durchgeführt.
-Nach Molyneaux \cite{molyneaux_art_2014} sollte für jede Konfiguration zunächst ein Pipe-clean Test durchgeführt werden. Dabei wird jedes System von nur einem einzigen Benutzer für ein bestimmtes Szenario angefragt. Dadurch lassen sich Basiswerte für die betrachteten Metriken ableiten, welche in späteren Tests zu Vergleichen hinzugezogen werden können.
+Nach Molyneaux sollte für jede Konfiguration zunächst ein Pipe-Clean Test durchgeführt werden\cite{molyneaux_art_2014}. Dabei wird jedes System von nur einem einzigen Benutzer für ein bestimmtes Szenario angefragt. Dadurch lassen sich Basiswerte für die betrachteten Metriken ableiten, welche in späteren Tests zu Vergleichen hinzugezogen werden können.
 
 Anschließend wird ein Stress-Test für die Konfiguration der Container-Anwendung durchgeführt. Dies ist notwendig, da AWS Lambda ein von Natur automatisch skalierendes System ist, während ein Container alleine nicht skalieren kann. Um eine zu hohe Auslastung des Containers während der Last-Tests zu vermeiden, wird der Stress-Test durchgeführt, um das VU-Limit für die aktuelle Container-Konfiguration zu erkennen. 
 Im Anschluss wird mit diesem ermittelten VU-Limit ein Last-Test gegen beide System durchgeführt und die Ergebnisse beider SUTs miteinander verglichen. 
-Der Last-Test wird mit einem langsamen und einem schnelleren Anstieg der Virtuellen Benutzer durchgeführt. Dadurch lässt sich das Verhalten der Systeme unter in kurzem Zeitraum zunehmender Last evaluieren. Der Last-Test mit dem schnellen Anstieg der Benutzer wird im folgenden als Spike-Test bezeichnet, um den Unterschied der beiden Tests deutlich zu machen. 
+Der Last-Test wird mit einem langsamen und einem schnelleren Anstieg der Virtuellen Benutzer durchgeführt. Dadurch lässt sich das Verhalten der Systeme unter in kurzem Zeitraum zunehmender Last evaluieren. Der Last-Test mit dem schnellen Anstieg der Benutzer wird im folgenden als Spike-Test bezeichnet, um den Unterschied der beiden Tests deutlicher zu machen. 
 
-Zwischen jedem Lambda-Test wurde eine Pause von mindestens 10 Minuten eingelegt, um warme Funktionen Zeit zu geben vom Garbage-Collector beendet zu werden.
+Zwischen jedem Lambda-Test wurde eine Pause von mindestens 10 Minuten eingelegt, um warmen Funktionen Zeit zu geben vom Garbage-Collector des Lambda-Services beendet zu werden.
