@@ -46,7 +46,7 @@ for path, table in tables.items():
     # only show time and metric value
     table = table[["time", "metric_value"]]
 
-    if names[path].endswith("spike600"):
+    if "spike600" in path:
         table.loc[table["time"] < 120, "metric_value"] = np.NaN
 
     # rename metric_value column to supplied name
