@@ -34,7 +34,7 @@ Das methodische Vorgehen für den Aufbau der Test-Umgebung basiert dabei grundle
     \item[P8] Kosten (Cost): Kostenmodell, Ressourcennutzung und abgerechnete Kosten angeben.
 \end{enumerate}
 
-Das Prinzip P4 wird erfüllt durch die Nutzung eines öffentlichen GitHub Repositories unter \textit{https://github.com/rolule/ba}. Dort finden sich die Skripte die zur Generierung der Tests verwendet wurden und die Output-Artefakte der Tests.
+Das Prinzip P4 wird erfüllt durch die Nutzung eines öffentlichen GitHub Repositories unter \url{https://github.com/rolule/ba}. Dort finden sich die Skripte die zur Generierung der Tests verwendet wurden und die Output-Artefakte der Tests.
 
 Im Anschluss an die Performance-Tests wird noch auf Möglichkeiten der Skalierung und die Kosten der beiden Technologien eingegangen.
 
@@ -53,7 +53,7 @@ Auch auf Authorisierungs-Mechanismen wird der Einfachheit halber verzichtet. Die
 Als Runtime wird sowohl bei der Serverless- als auch bei der containerisierten Anwendung Node.js 12 verwendet.
 
 \subsection{Serverless}
-Für die Entwicklung der Serverless-Anwendung wird das, mit mehr als 38.000 Github-Stars populäre, Serverless-Framework\cite{noauthor_serverless_nodate} verwendet. Dabei handelt es sich um ein Open-Source Framework zur Entwicklung von Serverless Anwendungen. Es übernimmt die Erstellung von Anwendungs-Stacks, Rechteverteilung und Konfiguration bei allen gängigen Public-Cloud Anbietern wie AWS, Azure oder GCP. Da in dieser Arbeit AWS verwendet wird, erstellt Serverless automatisch einen Anwendungs-Stack mit AWS CloudFormation. 
+Für die Entwicklung der Serverless-Anwendung wird das, mit mehr als 38.000 Github-Stars populäre, Serverless-Framework verwendet\cite{noauthor_serverlessserverless_nodate}. Dabei handelt es sich um ein Open-Source Framework zur Entwicklung von Serverless Anwendungen. Es übernimmt die Erstellung von Anwendungs-Stacks, Rechteverteilung und Konfiguration bei allen gängigen Public-Cloud Anbietern wie AWS, Azure oder GCP. Da in dieser Arbeit AWS verwendet wird, erstellt Serverless automatisch einen Anwendungs-Stack mit AWS CloudFormation. 
 Abbildung \ref{fig:serverless-testing-architektur} zeigt das Setup der mit der Serverless-Architektur konzipierten Webanwendung.
 
 \begin{figure}[H]
@@ -67,7 +67,7 @@ Der von Serverless bzw. CloudFormation erstellte Anwendungs-Stack beinhaltet ein
 Durch die Nutzung des Frameworks wird die Erstellung der Anwendung vereinfacht. Die Konfiguration des API-Gateways und des S3-Buckets werden automatisch erledigt. Zusätzlich minimiert das Framework den geschriebenen JavaScript Code mittels Webpack und erhöht so die Performance der Lambda-Funktion.
 
 \subsection{Container}
-Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars eines der meist verwendeten Web-Frameworks für Node.js ist. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
+Für die Entwicklung der containerisierten Anwendung wird das Express Framework verwendet, das mit über 51.000 Github-Stars ein weit verbreitetes Web-Frameworks für Node.js ist\cite{noauthor_expressjsexpress_2021}. Die Anwendung wird unter Nutzung der Docker-Engine mittels einer Dockerfile in ein Container-Image gebaut. Dieses Image wird in der AWS Elastic Container Registry (ECR) gespeichert, um es von dort aus weiter zu verwenden. 
 Die Ausführung der Anwendung erfolgt auf der AWS Elastic Container Service (ECS) Plattform, einem von AWS bereitgestelltem Orchestrations-Tool. Es wird der Starttyp Fargate benutzt, welcher die Erstellung eines Server-Clusters automatisch durchführt und so die Konfiguration erleichtert. Des Weiteren wird ein Elastic Load Balancer (ELB) vom Typ Application verwendet, um die eingehenden Requests auf die verschiedenen Container zu verteilen. 
 
 Abbildung \ref{fig:fargate-testing-architektur} zeigt das Setup der mit der Container-Architektur konzipierten Notiz-Anwendung.
@@ -78,7 +78,7 @@ Abbildung \ref{fig:fargate-testing-architektur} zeigt das Setup der mit der Cont
     \label{fig:fargate-testing-architektur}
 \end{figure}
 
-Bei der Konfiguration des Container-Clusters muss für Fargate eine Task-Definition erstellt werden. Diese beinhaltet alle Tasks die gleichzeitig in einem Service laufen sollen. Ein Service konfiguriert die Ausführung mehrerer Container-Instanzen. In dieser Arbeit wird, außer bei den Tests mit mehreren Instanzen, für jeden Service nur ein einziger Task, also eine einzige Container Instanz jedem Service zugeordnet. AWS ECS erlaubt nur bestimmte Paare von CPU und Speicher-Einstellungen für einen Container. Für die Tests mit 128MB und 256MB Speicher wird das Einstellungs-Paar mit 512MB Speicher und 0.25vCPU (virtual CPUs) festgelegt und die einzelnen Container mit entsprechenden harten Limits von 128MB und 256MB für den Arbeitsspeicher konfiguriert. Für die Tests mit 512MB wird die Einstellungs-Paar mit 1GB Speicher und 0.5vCPU verwendet, der ein hartes Limit von 512MB Speicher zugewiesen bekommt. Die Task-Definitionen sind im Anhang zu finden.
+Bei der Konfiguration des Container-Clusters muss für Fargate eine Task-Definition erstellt werden. Diese beinhaltet alle Tasks die gleichzeitig in einem Service laufen sollen. Ein Service konfiguriert die Ausführung mehrerer Container-Instanzen. In dieser Arbeit wird, außer bei den Tests mit mehreren Instanzen, für jeden Service nur ein einziger Task, also eine einzige Container Instanz jedem Service zugeordnet. AWS ECS erlaubt nur bestimmte Paare von CPU und Speicher-Einstellungen für einen Container. Für die Tests mit 128MB und 256MB Speicher wird das Einstellungs-Paar mit 512MB Speicher und 0.25vCPU festgelegt und die einzelnen Container mit entsprechenden harten Limits von 128MB und 256MB für den Arbeitsspeicher konfiguriert. Für die Tests mit 512MB wird die Einstellungs-Paar mit 1GB Speicher und 0.5vCPU verwendet, der ein hartes Limit von 512MB Speicher zugewiesen bekommt. Ein vCPU (virtual CPU) beschreibt laut AWS hierbei einen Thread eines CPU-Kerns\cite{noauthor_cpu-optionen_nodate}. Die Task-Definitionen sind im Anhang \ref{apx:task-definitions} zu finden.
 
 \section{Konzeption der Tests}
 
@@ -88,7 +88,7 @@ Um die Performance der eben vorgestellten Anwendungen zu testen, wird das Open-S
 Als Load-Generator wird eine in der AWS Region Paris (eu-west-3) stationierte EC2 Instanz des Typs t3.xlarge verwendet.
 Nach eigenen Angaben benötigt k6 für jeden virtuellen Benutzer und für einen kleinen Test eine Speicherauslastung zwischen 1 und 5 Megabyte\cite{noauthor_running_nodate}. Da die verwendete t3.xlarge Instanz 16 Gigabyte RAM beinhaltet, sollten theoretisch mehr als 3200 und maximal 16.000 gleichzeitige virtuelle Benutzer von der Testumgebung unterstützt werden. Die Instanz weist eine Netzwerkleistung von bis zu 5 Gbit/s auf, welche bei jeder Testausführung mittels des Tools iftop überwacht wird, um sicherzugehen, dass das Netzwerk nicht zum Flaschenhals wird. Auch die CPU Auslastung wird mittels htop überprüft.
 
-Die Tests werden ausgeführt, indem vom Entwicklungscomputer eine SSH Verbindung zum Load-Generator aufgebaut wird. Dann wird der Test-Code über das GitHub-Repository heruntergeladen. Zur Ausführung der Tests und automatisch komprimierter Speicherung der Test-Artefakte im Repository wurde ein Node.js Skript geschrieben, welches unter "`test.js"' zu finden ist. Das Skript liest von der Kommandozeile die Parameter des aktuellen Tests ein und startet dann k6 mit dem vom Benutzer ausgewählten Test-Szenario.
+Die Tests werden ausgeführt, indem vom Entwicklungscomputer eine SSH Verbindung zum Load-Generator aufgebaut wird. Dann wird der Test-Code über das GitHub-Repository heruntergeladen. Zur Ausführung der Tests und automatisch komprimierter Speicherung der Test-Artefakte im Repository wurde ein Node.js Skript geschrieben, welches unter dem Dateinamen "`test.js"' zu finden ist. Das Skript liest von der Kommandozeile die Parameter des aktuellen Tests ein und startet dann k6 mit dem vom Benutzer ausgewählten Test-Szenario. 
 
 \subsection{Metriken}
 Das Testing-Tool k6 speichert für jeden Request an einen bestimmten API-Endpunkt unter anderem Werte folgender Metriken:
@@ -110,6 +110,8 @@ Das Testing-Tool k6 speichert für jeden Request an einen bestimmten API-Endpunk
 \end{enumerate}
 
 Für Analysen und Vergleiche mehrerer Test-Ausführungen untereinander, werden die Ergebnisse jedes k6-Tests als CSV-Text-Datei exportiert. Im Anschluss können diese Dateien mit dem Data-Science Framework Pandas\cite{noauthor_pandas_nodate} für die Programmiersprache Python analysiert und verglichen werden. Der Source-Code der Analysen und die Ergebnis-Artefakte der Tests sind im Code-Repository dieser Arbeit zu finden (vgl. Anhang \ref{apx:repo}).
+
+Weitere Metriken wie die CPU-Auslastung eines Fargate-Clusters und die maximale Nebenläufigkeit, Funktions-Dauer und Coldstart-Dauer werden von der AWS CloudWatch Konsole abgelesen und können daher nicht als Artefakte gespeichert werden.
 
 \subsection{Test-Typen}
 Bei Performance Tests können verschiedene Testing-Strategien eingesetzt werden.
