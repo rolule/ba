@@ -8,7 +8,7 @@ const { exit } = require("process");
 
 // command lint args
 
-let log = process.argv.includes("--log")
+let log = process.argv.includes("--log");
 
 // confg file path
 let configFile = "config.yaml";
@@ -245,11 +245,13 @@ async function start() {
   const tarArchivePath = `${outputFolder}/${tarArchiveName}`;
   const commitMsg = `Add test: ${serviceType.toUpperCase()} ${totalTaskMemory}MB UC-${useCaseName.toUpperCase()} ${strategyName}`;
 
-  if(log){
-    console.log(`k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`);
-    console.log(`cd ${outputFolder} && tar cfz ${tarArchiveName} ${fileName}.csv ${fileName}.json && cd -`)
-    console.log(`git add ${tarArchivePath} && git commit -m "${commitMsg}"`)
-    exit(0)
+  if (log) {
+    console.log(
+      `k6 run ${useCaseFile} --config ${strategyFile} -e API_URL="${apiUrl}" --out csv="${outputFile}.csv" ${datadog} --summary-export="${outputFile}.json"`
+    );
+    console.log(`cd ${outputFolder} && tar cfz ${tarArchiveName} ${fileName}.csv ${fileName}.json && cd -`);
+    console.log(`git add ${tarArchivePath} && git commit -m "${commitMsg}"`);
+    exit(0);
   }
 
   exec(
@@ -275,16 +277,16 @@ async function start() {
       const { metrics } = JSON.parse(fs.readFileSync(`${outputFile}.json`));
       const { http_reqs: requests } = metrics;
       console.log(`Total requests  : ${requests.count}`);
-      console.log(`Avg request rate: ${round(requests.rate)}/s`);
+      console.log(`Avg request rate: ${round(requests.rate)} /s`);
 
       const { http_req_duration: duration } = metrics;
-      console.log(`Duration
-  - med: ${round(duration.med)}ms
-  - min: ${round(duration.min)}ms
-  - max: ${round(duration.max)}ms
-  - avg: ${round(duration.avg)}ms
-  - p90: ${round(duration["p(90)"])}ms
-  - p95: ${round(duration["p(95)"])}ms`);
+      console.log(`Duration (ms)
+  - avg: ${round(duration.avg)}
+  - min: ${round(duration.min)}
+  - max: ${round(duration.max)}
+  - med: ${round(duration.med)}
+  - p90: ${round(duration["p(90)"])}
+  - p95: ${round(duration["p(95)"])}`);
 
       console.log(`VUs
   - min: ${metrics.vus.min}
@@ -318,7 +320,7 @@ async function start() {
                 return;
               }
 
-              exec(`rm ${outputFile}.csv ${outputFile}.json`)
+              exec(`rm ${outputFile}.csv ${outputFile}.json`);
             });
           } else {
             console.log("Did not add anything to git");
