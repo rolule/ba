@@ -17,9 +17,9 @@ if (process.argv.includes("--config")) {
 }
 
 // not using datadog
-let datadog = "--out datadog";
-if (process.argv.includes("--no-datadog")) {
-  datadog = "";
+let datadog = "";
+if (process.argv.includes("--datadog")) {
+  datadog = "--out datadog";
 }
 
 // creating all artifacts in debug folder
