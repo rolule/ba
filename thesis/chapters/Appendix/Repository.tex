@@ -1,3 +1,21 @@
 \chapter{Repository}
 \label{apx:repo}
-In diesem Kapitel wird das Code-Repository erklärt.
+In diesem Kapitel wird der Aufbau des Code-Repositories erklärt. Es ist unter der URL \url{https://github.com/rolule/ba} auffindbar.
+
+Das Repository ist in zwei Ordner unterteilt. Im Ordner "`thesis"' ist der Latex-Source Code dieser Arbeit zu finden. Der Ordner "`code"' enthält alle für diese Arbeit verwendeten Quellcode-Dateien, Test-Skripte und Test-Artefakte. Zusätzlich ist auf der Root-Ebene des Repositories die PDF-Version dieser Arbeit zu finden. Im folgenden wird sich ausschließlich auf den Ordner "`code"' bezogen.
+
+\section{Anwendungs-Quellcode}
+\subsection{Container}
+Der Quellcode der Container-Anwendung ist im Unterordner "`container/notes-express"' zu finden. Er enthält die zum Bauen des Container-Images benötigte Dockerfile, welche mit Hilfe des Skriptes "`build.sh"' gebaut werden kann. Zum Bauen des Abbildes wird ein laufender Docker-Daemon benötigt. Die Anwendung kann nach dem Bauprozess mit dem Skript "`run.sh"' auf Port 80 gestartet werden. Der Server sollte beim Aufrufen der URL \url{http://localhost/notes} im Web-Browser eine in JSON formatierte Liste von Notizen anzeigen. 
+
+\subsection{Serverless}
+Der Quellcode der Serverless-Anwendung ist im Unterordner "`serverless/notes-serverless"' zu finden. Zum Deployen und Ausführen der Anwendung ist das Serverless Framework und ein eingeloggter AWS Benutzer notwendig. Sie wurde aber so konzipiert, dass sie sich genau so wie der Container verhält. Der Code der einzelnen Funktionen ist in den Dateien "`get.js"', "`list.js"', "`update.js"' und "`create.js"' zu finden. Die Datei "`serverless.yml"' enthält die Konfiguration des Serverless Frameworks.
+
+\section{Test Dateien}
+Der Ordner "`tests"' enthält alle Dateien die zur Ausführung und Auswertung der Tests notwendig sind. Auch die Test-Artefakte sind hier enthalten. Die im folgenden beschriebenen Dateien befinden sich alle innerhalb dieses Ordners. Um die Skripte in diesem Ordner ausführen zu können, werden einige Abhängigkeiten benötigt. Da auch die Load-Generatoren diese benötigen, wurde ein Shell Skript geschrieben, welches diese installiert und konfiguriert. Es ist unter dem Dateinamen "`setup.sh"' zu finden und kann auf einer AWS EC2 Instanz ausgeführt werden, um die Tests-Umgebung zu initialisieren.
+
+\subsection{Test Skripte und Konfiguration}
+Das Skript "`test.js"' wurde erstellt, um die Tests auf den Load-Generatoren leichter ausführen zu können. Es wurde in Node.js geschrieben und um es auszuführen, muss Node.js und der Node Paket Manager (npm) installiert sein und die Abhängigkeiten mittels des Befehls \textit{npm install} installiert worden sein. Zur einfacheren Ausführung wurde ein Shell-Skript mit dem Namen "`test.sh"' geschrieben, dass die Node-Applikation mit allen übergebenen Parametern aufruft. 
+Das Test-Skript dient der Konfiguration und Ausführung jedes einzelnen durchgeführten Tests. Es bittet den Benutzer um eine Eingabe des ausgewählten Services (Lambda oder Fargate), die konfigurierte Größe (128MB, 256MB, 512MB), den Use-Case (a, b, c) und den Test-Strategien (pipe, stress, load, spike). Zusätzlich wird für Fargate die Anzahl der Tasks, also der Container-Instanzen abgefragt. Die Use-Case Skripte befinden sich im Unterordner "`use-cases"' und werden in der von dem Testing-Tool k6 verstandenen Syntax (in JavaScript) geschrieben. Die Konfigurationen der einzelnen Test-Strategien sind im Unterordner "`strategies"' zu finden und werden k6 bei der Ausführung als Optionen übergeben.
+
+Hat der Benutzer alle Angaben gemacht, wird k6 mit den ausgewählten Test-Einstellungen ausgeführt. Nach Terminierung des Tests, werden dem Benutzer die von k6 ermittelten Metriken angezeigt. Darunter ist die durchschnittliche (avg), minimale (min), maximale (max), mediane Antwortzeit (med) und die 0,90 und 0,95 Quantile. Zusätzlich wird die Gesamtzahl aller Requests dieses Test-Durchlaufs und die Anzahl der durchschnittlichen Requests pro Sekunde ausgegeben. Für weitere Metriken wie die Standardabweichung und den Variationskoeffizienten, werden die Python-Analysetools verwendet. Die Metriken der maximalen CPU-Auslastung, maximale Funktions-Dauer, maximale Coldstart-Dauer und maximale Nebenläufigkeit werden von der AWS CloudWatch Konsole abgelesen.

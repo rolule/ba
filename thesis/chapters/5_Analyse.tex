@@ -1,5 +1,5 @@
 \chapter{Analyse}
-In diesem Kapitel werden die in Kapitel 4 vorgestellten Systeme analysiert.
+In diesem Kapitel werden die in Kapitel \ref{ch:konzeption} vorgestellten Systeme analysiert.
 
 \section{128MB Konfigurationen}
 Zunächst werden alle Tests gegen die 128MB Konfigurationen ausgeführt. In den folgenden Sektionen wird dann die Speicher- und Prozessorgröße erhöht. 
@@ -47,7 +47,7 @@ Bei dem zweiten Stress-Test mit bis zu 600 VUs, änderte sich nicht viel im Verg
 
 Der dritte Stress-Test für den 128MB Container wurde mit bis zu 1000 VUs durchgeführt. Abbildung \ref{fig:fargate128-stress1000} zeigt den zeitlichen Verlauf dieses Tests für Use-Case A. Es wird dabei die Anzahl der virtuellen Benutzer und die Antwortzeit im Median pro Sekunde dargestellt. Es wird deutlich, dass die Antwortzeit ab ca. 700 VUs deutlich ansteigt. Dies deckt sich der von AWS Cloudwatch gemessenen CPU-Auslastung von knapp unter 100\% die bei dieser Nutzerzahl gemessen wurde. In den Perioden mit Anstieg der VUS steigt auch die Antwortzeit. In jeder Periode mit konstanten Nutzerzahlen können die Requests besser verarbeitet werden und die Kurve geht leicht herunter. Während des Tests wurden trotz einer CPU-Auslastung von teilweise 100\% nur 31 HTTP 502 Fehlercodes vom Server ausgelöst, was einer Quote von 0,0027\% entspricht. Die Antwortzeit konnte im Median weiterhin bei etwa 60ms gehalten werden; die durchschnittliche Antwortzeit stieg mit 116,8ms auf fast das doppelte des Grundwertes an.  
 Bei Use-Case B lag die erreichte Prozessor-Auslastung bei 93,14\%. So wurden keine deutlichen Abweichungen ausgelöst. Der Variationskoeffizient stieg mit 0,2 leicht an, liegt aber immer noch deutlich unter dem Wert des Pipe-Clean Tests der 128MB Lambda Funktion. Dieser Wert könnte allerdings auch durch die von den aufgetretenen Fehler verursachten geringen Antwortzeiten gestiegen sein. Diese sind in allen Tabellen-Abbildungen mit einem Stern (*) gekennzeichnet.
-Um die maximale Auslastung des Containers für die anderen beiden Use-Cases zu erreichen, wurden noch weitere Stress-Tests mit bis zu 2.000 VUs durchgeführt. Bei Use-Case B konnte das Limit bei ca. 1.100 Benutzern erreicht werden. Für Use-Case C liegt es bei ca. 1.500 Benutzern.
+Um die maximale Auslastung des Containers für die anderen beiden Use-Cases zu erreichen, wurden noch weitere Stress-Tests mit bis zu 1.500 VUs durchgeführt. Bei Use-Case B konnte das Limit bei ca. 1.100 Benutzern erreicht werden. Für Use-Case C liegt es bei ca. 1.200-1.300 Benutzern.
 
 \subsubsection{Lambda}
 Nachdem die maximale Performance des 128MB Containers ermittelt wurde, werden im Anschluss die gleichen Stress-Tests für die Lambda-Anwendung mit 128MB durchgeführt. Abbildung \ref{fig:lambda128-stress-comparison} zeigt die Ergebnisse. 
@@ -122,7 +122,7 @@ Es zeichnet sich wie auch schon bei den Stress-Tests ein Unterschied der Antwort
     \label{fig:lambda128-load600-uc-comparison}
 \end{figure}
 
-Es ist zu erkennen, dass alle Use-Cases einen generell ähnlichen Verlauf haben. Use-Case A mit nur einem Endpunkt weist jedoch überwiegend die geringste Antwortzeit auf. Die Linie von Use-Case B liegt nur leicht aber eindeutig über der des ersten Use-Case, übertrifft diesen sogar gegen Ende des Vergleichs. Use-Case C mit den meisten Endpunkten weist auch die höchsten Antwortzeiten auf und erreicht mit über 95ms in etwa 5ms höhere Zeiten als die anderen beiden Use-Cases.  
+Es ist zu erkennen, dass alle Use-Cases einen generell ähnlichen Verlauf haben. Use-Case A mit nur einem Endpunkt weist jedoch überwiegend die geringste Antwortzeit auf. Die Linie von Use-Case B liegt nur leicht aber eindeutig über der des ersten Use-Case, übertrifft diesen sogar gegen Ende des Vergleichs. Use-Case C mit den meisten Endpunkten weist auch die höchsten Antwortzeiten auf und erreicht mit über 95ms ein in etwa 5ms höheres Maximum als die anderen beiden Use-Cases.  
 
 
 \section{Andere Konfigurationen (RQ3)}
@@ -143,9 +143,17 @@ Allerdings ist zu erkennen, dass die maximale Funktionsdauer bei den größeren 
 
 \subsection{Stress- und Load-Tests}
 Unter Annahme von H3 wird davon ausgegangen, dass der Container 256MB Speicher und CPU-Größe doppelt so viele Anfragen verarbeiten kann wie der Container mit 128MB. Da der kleinere Container bis zu 700 Benutzer bedienen konnte, wurde im folgenden ein Stress-Test mit bis zu 1500 Benutzern durchgeführt, für den Fall dass er mehr als doppelt so viel verarbeiten kann.
-Trotz des doppelt so großen Speichers und vCPUs konnte jedoch keine Verbesserung der maximalen Benutzer für die Container-Instanz erreicht werden. Genau wie der 128MB Container begann die Antwortzeit des 256MB Container bei ca. 700 VUs stark anzusteigen. Die Hypothese H3 kann also für diesen Fall nicht bestätigt werden.
+Trotz des doppelt so großen Speichers und vCPUs konnte jedoch keine Verbesserung der maximalen Benutzer für die Container-Instanz erreicht werden. Genau wie der 128MB Container begann die Antwortzeit des 256MB Containers für Use-Case A bei ca. 700 VUs stark anzusteigen. Für Use-Case B kam es ab ca. 900-1.100 VUs zu Anstiegen der Antwortzeiten. Für Use-Case C wurde ein Limit von ca. 1100-1300 VUs erkannt. Damit ist kein wirklicher Unterschied zu der 128MB Variante erkennbar. Die Hypothese H3 kann also für diesen Fall nicht bestätigt werden.
 
-Die Stress-Tests für die Lambda Funktion wurden für diese Konfiguration nicht durchgeführt, da keine Verbesserung gegenüber der 128MB Variante zu vermutet wird. 
+Der Verlauf der Stress-Tests für der 128MB Serverless-Anwendung zeigte, dass eine größere Anzahl an Endpunkten zu höheren Antwortzeiten führen könnte (vgl. Abbildung \ref{fig:lambda128-stress1000-comparison-graph}). Wie Abbildung \ref{fig:lambda256-stress1000-comparison-graph} für den Stress-Test mit bis zu 1000 VUs zeigt, ist dies auch bei den 256MB Funktionen der Fall. Allerdings scheint der Größenunterschied zwischen den Use-Cases im Vergleich zu der kleineren Konfiguration zurückgegangen sein. Auch bei dieser Abbildung werden die ersten 60 Sekunden nicht angezeigt, da die initial sehr hohen Antwortzeiten die Darstellung der Verläufe stark verzerren würde. 
+
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{img/lambda256-stress1000-comparison-graph.png}
+    \caption[Lambda 256MB Stress-Test Verlauf Vergleich]{Lambda 256MB Stress-Test Verlauf Vergleich}
+    \label{fig:lambda256-stress1000-comparison-graph}
+\end{figure}
+
+Bei allen drei Use-Cases lagen die Antwortzeiten dennoch nahe um einen Median-Wert von ca. 78ms und es wurden 95 Prozent aller Anfragen in etwa 100ms verarbeitet. Bei der 128MB Variante reichte das P(95) Quantil noch von 114ms bis zu mehr als 122ms. Der Variationskoeffizient lag ebenso in allen Fällen bei 0,16 bis 0,18 und ist damit deutlich geringer als bei der kleineren Konfiguration, bei der er meistens bei 0,22 lag, allerdings auch einen Wert von 0,64 erreichte. Damit ist eine deutliche Verbesserung der Performance und der Varianz in den Stress-Tests für die 256MB Variante festzustellen.
 
 Im Anschluss wurden die Last- bzw. Spike Tests durchgeführt, um diese mit der 128MB Variante zu vergleichen. Als VU-Limit wurde erneut 600 festgelegt. Dies ermöglicht einen einfachen Vergleich der beiden Varianten.
 Auch hier konnte für die Container-Anwendung keine Unterschiede zu der kleineren Konfiguration festgestellt werden. 
@@ -156,20 +164,28 @@ Auch hier konnte für die Container-Anwendung keine Unterschiede zu der kleinere
     \label{fig:lambda128+256-ucb-load600-vs-spike600-graph}
 \end{figure}
 
-Für die Lambda-Funktionen sind bei der 256MB Variante im Gegensatz zu der 128MB Konfiguration keine wesentliche Unterschiede zwischen den Load- und Spike Tests zu erkennen. Wie in Abbildung \ref{fig:lambda128+256-ucb-load600-vs-spike600-graph} für Use-Case B zu erkennen ist, sind die größeren Funktionen nahezu gar nicht von der Skalierung betroffen. Die Antwortzeit liegt, bis auf den anfänglichen Anstieg, beständig zwischen ca. 75 und 80ms. Im Vergleich zu der kleineren Variante, verkleinerte sich auch der Variationskoeffizient von 0,22 auf 0,17. Wie schon bei den Pipe-Clean Tests zu sehen war, sinkt auch hier die maximale Funktionsdauer von über 600ms bei 128MB auf unter 300ms ab. Bei der Antwortzeit im Median und der Coldstart-Dauer konnte auch hier keine Veränderung festgestellt werden.
+Für die Lambda-Funktionen der Use-Cases A und B sind bei der 256MB Variante im Gegensatz zu der 128MB Konfiguration keine wesentliche Unterschiede zwischen den Load- und Spike Tests zu erkennen. Wie in Abbildung \ref{fig:lambda128+256-ucb-load600-vs-spike600-graph} für Use-Case B zu erkennen ist, sind die größeren Funktionen nahezu gar nicht von der Skalierung betroffen. Die Antwortzeit liegt, bis auf den anfänglichen Anstieg, beständig zwischen ca. 75 und 80ms. Im Vergleich zu der kleineren Variante, verkleinerte sich auch hier der Variationskoeffizient von 0,22 auf 0,17. Wie schon bei den Pipe-Clean Tests zu sehen war, sinkt auch die maximale Funktionsdauer von über 600ms bei 128MB auf unter 300ms ab. Bei den Antwortzeiten gab es ebenso eine geringfügige Verbesserung. Bei Coldstart-Dauer konnte dagegen keine Veränderung festgestellt werden.
+Allein bei Use-Case C gibt es Unterschiede in den Antwortzeiten. Während der Wert des Medians bei den Load-Tests nur etwas über 78ms liegt, liegt er bei den beiden Durchläufen der Spike-Tests bei 88.46 und 84.26ms. Vermutlich ist dies auf vermehrte Coldstarts durch die größere Anzahl an Endpunkten zurückzuführen.
 
 
-Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 512 Megabyte untersucht werden. Ein Stress-Test des Containers mit bis zu 1500 Benutzern, ergab für Use-Case A, dass die Antwortzeit des Containers ab einer VU-Anzahl von ca. 1400 Benutzern deutlich zunimmt. Mit Eintreten der 1400 Benutzer erreichte das Container Cluster ebenso eine CPU-Auslastung von 100 Prozent. Für Use-Case B musste ein weiterer Stress-Test durchgeführt werden, da bei 1500 Benutzern nur eine CPU-Auslastung von 58\% erreicht werden konnte. Der zweite Stress-Test wurde mit bis zu 2400 Benutzern durchgeführt. Bei ca. 2350 VUs wurde die maximale Auslastung des Containers erreicht.
+Als nächstes sollen Container und Lambda-Funktionen mit einer CPU- und Speicher-Größe von 512 Megabyte untersucht werden. Ein Stress-Test des Containers mit bis zu 1500 Benutzern, ergab für Use-Case A, dass die Antwortzeit des Containers ab einer VU-Anzahl von ca. 1400 Benutzern deutlich zunimmt. Mit Eintreten der 1400 Benutzer erreichte das Container Cluster ebenso eine CPU-Auslastung von 100 Prozent. Bei einem zweiten Test war dies für Use-Case A allerdings erst ab ca. 1.600 Benutzern der Fall. Für Use-Case B musste ein weiterer Stress-Test durchgeführt werden, da bei 1500 Benutzern nur eine CPU-Auslastung von 58\% erreicht werden konnte. Der zweite Stress-Test wurde mit bis zu 2.500 Benutzern durchgeführt. Bei ca. 2.200-2.400 VUs wurde die maximale Auslastung des Containers erreicht. Ein weiterer Stress-Test mit bis zu 3.000 VUs ergab für Use-Case C ein Limit von ca. 2.800-3.000 Benutzern.
 
-Im Anschluss an die Stress-Tests des Containers wurden diese mit den gleichen Konfigurationen gegen die Lambda-Anwendung durchgeführt.
+Im Anschluss an die Stress-Tests des Containers wurden diese mit den gleichen Konfigurationen gegen die Lambda-Anwendung durchgeführt. 
+
+Die Load- und Spike-Tests wurden für die 512MB Konfiguration mit 1.200 VUs durchgeführt. Bei dem Fargate-Container konnte wie schon zuvor keine Unterschiede zwischen den beiden Tests festgestellt werden. Bis auf einige Ausreißer wurde wie schon bei den kleineren Konfigurationen für alle Use-Cases und für beide Anstiege eine Antwortzeit im Median von ca. 60ms festgestellt. Der Variationskoeffizient bewegt sich in den Testausführungen meist zwischen 0,03 und 0,05 und liegt damit nur geringfügig über den Werten der Pipe-Clean Tests. Bis auf eine höhere Anzahl der verarbeitbaren Anfragen konnten also keine Performance-Verbesserungen der 512MB Konfiguration festgestellt werden.
+
+Die Load-Tests der 512MB Lambda-Funktionen bestätigten erneut, dass die Anzahl der Endpunkte einen Einfluss auf die Antwortzeiten hat. Es gab hier allerdings bei den Use-Cases A und B Unterschiede von einigen Millisekunden zwischen den Ausführungen des gleichen Use-Cases. So war die beste Ausführung des Use-Case B besser als die schlechtere Ausführung des Use-Cases A. Die beste Variante des ersten Use-Cases war aber erneut besser als die performanteste Ausführung von Use-Case B. Der Use-Case mit den meisten Endpunkten schnitt auch hier wieder deutlich am unperformantesten ab.
+
+Auch bei den Spike-Tests traten ähnliche Abweichungen wie bei den Load-Tests auf. Deshalb werden für die Analyse nur die jeweils besten Läufe betrachtet. Abbildung \ref{fig:lambda512-load1200-vs-spike1200-graph} zeigt den Verlauf der Load-Tests im Vergleich mit den Spike-Tests. 
 
 \begin{figure}[H]
-    \includegraphics[width=\textwidth]{img/512MB-stress-comparison.png}
-    \caption[Vergleich der Stress-Tests für 512MB Konfigurationen]{Vergleich der Stress-Tests für 512MB Konfigurationen}
-    \label{fig:512MB-stress-comparison}
+    \includegraphics[width=\textwidth]{img/lambda512-load1200-vs-spike1200-graph.png}
+    \caption[Vergleich der Lambda 512MB Load- und Spike-Tests]{Vergleich der Lambda 512MB Load- und Spike-Tests}
+    \label{fig:lambda512-load1200-vs-spike1200-graph}
 \end{figure}
 
-Abbildung \ref{fig:512MB-stress-comparison} zeigt das Ergebnis der Stress-Tests für die Use-Cases A und B. Der Container konnte dabei erneut, trotz Überlastung, geringfügig mehr Requests verarbeiten als die Lambda-Funktionen. Die Antwortzeit der Lambda-Funktionen pendelte sich, wie schon bei der 256MB Funktion, bei ca. 77ms ein. Auch der Variationskoeffizient lag erneut bei 0,17. Auffällig ist die hohe Fehleranzahl von 76 HTTP-502-Statuscodes, die bei der Container-Anwendung für Use-Case B auftraten. Die maximale Funktions-Dauer war im Vergleich mit den Stress-Tests der 256MB Lambda-Funktionen erneut deutlich niedriger.
+Auch hier zeichnet sich der Einfluss der Anzahl der Endpunkte ab. Der Median von Use-Case B liegt mit 78ms zwar nur knapp über den 77,02ms von Use-Case A. Deutlicher ist aber der Abstand von Use-Case C, dessen Antwortzeiten sich fast durchgängig bei in etwa 85ms befinden. 
+Wie schon bei der 256MB Konfiguration ist kein Unterschied zwischen den Load-Test Ausführungen der Use-Cases A und B und den korrespondierenden Spike-Tests erkennbar. Für Use-Case C kann in der 512MB Konfiguration das gleiche beobachtet werden. Es zeigt sich also trotz der doppelt so großen Benutzerzahl im Vergleich zu den kleineren Konfigurationen eine Verbesserung des Skalierungsverhaltens.  
 
 \section{Mehrere Container (RQ4)}
 Für die Untersuchung inwiefern sich die Anzahl der aktiven Container auf die Performance auswirkt, wurde ein Test mit der Fargate 256MB Task-Definition durchgeführt. Dazu wurden zwei Container-Instanzen gestartet und den gleichen Stress-Tests unterzogen wie die einzelne 512MB Container-Instanz. Abbildung \ref{fig:fargate-512-vs-2x256-stress-comparison} zeigt das Ergebnis des Tests.
@@ -185,10 +201,10 @@ In diesem Test wird kein Unterschied in der Performance einer einzelnen 512MB In
 
 \section{Kosten}
 \label{sec:kosten}
-In dieser Sektion sollen die Kostenmodelle der in dieser Arbeit getesteten Technologien untersucht und verglichen werden. Dabei wird sich erneut aufs Amazon AWS beschränkt. Es kann daher bei anderen Public-Cloud Anbietern deutliche Unterschiede geben.
+In dieser Sektion sollen die Kostenmodelle der in dieser Arbeit getesteten Technologien untersucht und verglichen werden. Dabei wird sich erneut aufs Amazon AWS beschränkt. Es kann daher bei anderen Public-Cloud Anbietern deutliche Unterschiede geben. In AWS gibt es Kostenunterschiede für die einzelnen AWS Regionen. Die folgenden Ausführungen beziehen sich daher ausschließlich auf die Region Frankfurt (eu-central-1).
 
 \subsection{Container}
-Wie schon in der vorherigen Sektion erwähnt gibt es viele verschiedene Wege, Container-Anwendungen in der Public Cloud zu betreiben. Für die Kosten-Schätzung werden deshalb nur der Betrieb der Anwendung mit AWS ECS Fargate-Starttyp und Amazon Elastic Kubernetes Service betrachtet.
+Da viele verschiedene Wege existieren, Container-Anwendungen in der Public Cloud zu betreiben, wird für die Kosten-Schätzung deshalb nur der Betrieb der Anwendung mit AWS ECS Fargate-Starttyp und Amazon Elastic Kubernetes Service betrachtet.
 
 Bei Fargate wird die Abrechnung in die gewählte Arbeitsspeicher und vCPU-Größe unterteilt. Der Preis für ein Arbeitsspeicher Gigabyte pro Stunde beträgt aktuell 0,00511\$ und der pro vCPU pro Stunde 0,04656\$. Die Formel \ref{fargate-kosten-formel} zeigt die Berechnung der Kosten für ein Fargate-Cluster.
 
@@ -202,13 +218,13 @@ Es wird davon ausgegangen, dass mindestens ein Task dauerhaft laufen muss, damit
 
 $Kosten = 1 * 24 * 30 * (0,5 * 0,00511\$ + 0,25 * 0,04656\$) = 10,22\$$ \\
 
-Dieser Wert konnte mit den in dieser Arbeit durchgeführten Tests bestätigt werden, da jeden Tag Kosten von 0,34\$ für die Nutzung des Clusters anfielen. Bei 30 Tagen Laufzeit ergeben sich damit tatsächlich Kosten von 10,2\$.
+Dieser Wert konnte mit den in dieser Arbeit durchgeführten Tests bestätigt werden, da für jeden Tag Kosten von 0,34\$ für die Nutzung des Clusters von AWS aufgeführt wurden. Bei 30 Tagen Laufzeit ergeben sich damit tatsächlich Gesamtkosten von 10,2\$.
 
-Für eine n-fache Anzahl an Tasks ergeben sich auch die n-fachen Kosten pro Monat. Variationen in den Anzahlen der Tasks aufgrund von (Auto-) Skalierung sind schwer vorauszusagen und werden daher nicht berechnet.
+Aus der Formel lässt sich ableiten, dass sich für eine n-fache Anzahl an Tasks auch die n-fachen Kosten pro Monat ergeben. Variationen in der Anzahl der Tasks aufgrund von (Auto-) Skalierung sind schwer vorauszusagen und werden daher nicht berechnet.
 
 Zusätzlich zu den Fargate Kosten sind noch Gebühren für die Nutzung des Load-Balancers fällig, dessen Nutzung bei der Verwendung mehrerer Instanzen unabdingbar ist. Für einen Application Load Balancer fallen pro angefangener Stunde Kosten von 0,027\$ an. Das ergibt für 30 Tage Kosten von 19,44\$. Zusätzlich fallen noch Gebühren für die Auslastung des Load-Balancers an; bspw. für die aktiven Verbindungen pro Minute\cite{noauthor_preise_nodate}. Auch diese können nicht vorausgesagt werden und werden daher bei der Berechnung vernachlässigt.
 
-Die folgende Übersicht zeigt die monatlichen Fixkosten einer Instanz für die unterschiedlichen in dieser Arbeit verwendeten Konfigurations-Größen inklusive Nutzung eines Application Load Balancer:
+Die folgende Übersicht zeigt die monatlichen Fixkosten einer Instanz für die unterschiedlichen in dieser Arbeit verwendeten Konfigurations-Größen inklusive Nutzung eines Application Load Balancers:
 
 \begin{itemize}
     \item 128MB = 0,5GB und 0,25 vCPU = 10,22\$ + 19,44\$ (ELB) = 29,66\$
@@ -222,13 +238,13 @@ Kosten für Skalierung und die Nutzung des Load-Balancers sind hierbei noch zu e
 
 \subsection{Lambda}
 \label{subsec:kosten-lambda}
-Die Ausführung von Lambda-Funktionen wird nach der Ausführungszeit in Millisekunden abgerechnet. Dabei zählt die Zeit eines Cold-Starts mit in die Berechnung ein. Auch die konfigurierte Arbeitsspeichergröße fließt mit in das Ergebnis ein. Derzeit berechnet AWS in der Region Frankfurt (eu-central-1) Kosten von 0,0000166667 US-Dollar pro Gigabyte-Sekunde (GB-Sekunde) \cite{noauthor_lambda_nodate}. Zusätzlich müssen pro 1.000.000 Ausführungen im Monat noch einmal 0,20 US-Dollar Anforderungsgebühren gezahlt werden. AWS bietet ein kostenloses Nutzenkontingent von 400.000 Aufrufen pro Funktion im Monat an.
+Die Ausführung von Lambda-Funktionen wird nach der Ausführungszeit in Millisekunden abgerechnet. Dabei wird die Zeit für einen Cold-Starts mit einberechnet. Auch die konfigurierte Arbeitsspeichergröße fließt mit in das Ergebnis ein. Derzeit berechnet AWS in der Region Frankfurt Kosten von 0,0000166667 US-Dollar pro Gigabyte-Sekunde (GB-Sekunde) \cite{noauthor_lambda_nodate}. Zusätzlich müssen pro 1.000.000 Ausführungen im Monat noch einmal 0,20 US-Dollar Anforderungsgebühren gezahlt werden. AWS bietet ein kostenloses Nutzenkontingent von 400.000 Aufrufen pro Funktion im Monat an.
 
-Für die Ausführung der Lambda-Funktionen wird ein Event-Auslöser für REST-Anfragen benötigt. Dazu wurde in dieser Arbeit Amazon API Gateway verwendet, welches eingehende Requests auf die vorgesehene Lambda-Funktion weiterleitet. Für die Verwendung des API Gateways fallen zusätzliche Kosten an. Bei Nutzung des Serverless Frameworks wird automatisch eine API des Typs REST erstellt. Es fallen für diesen API-Typ Kosten von 3,70 Euro pro einer Millionen Aufruf an. Diese werden für jede API insgesamt gerechnet und gelten damit nicht für jede einzelne aufgerufene Lambda-Funktion. Es gibt Vergünstigungen ab 333 Millionen Aufrufen im Monat. Zuzügliche Preise für Caching werden hierbei nicht einberechnet. AWS bietet für das API Gateway kostenloses Nutzenkontingent von einer Millionen Aufrufen im Monat an\cite{noauthor_amazon_nodate}. Formel \ref{lambda-kosten-formel} zeigt die Berechnung der Gesamtkosten für eine Lambda-Funktion.
+Für die Ausführung der Lambda-Funktionen wird ein Event-Auslöser für REST-Anfragen benötigt. Dazu wurde in dieser Arbeit Amazon API Gateway verwendet, welches eingehende Requests auf die vorgesehene Lambda-Funktion weiterleitet. Für die Verwendung des API Gateways fallen zusätzliche Kosten an. Bei Nutzung des Serverless Frameworks wird automatisch eine API des Typs REST erstellt. Es fallen für diesen API-Typ Kosten von 3,70 Euro pro einer Millionen Aufruf an. Diese werden für jede API insgesamt gerechnet und gelten damit nicht für jede einzelne aufgerufene Lambda-Funktion. Es gibt Vergünstigungen ab 333 Millionen Aufrufen im Monat. In dieser Arbeit werden keine Caching Mechanismen des API Gateways verwendet. Werden diese in den Einstellungen der API aktiviert, fallen zusätzliche Kosten an. AWS bietet für das API Gateway ein kostenloses Nutzenkontingent von einer Millionen Aufrufen im Monat an\cite{noauthor_amazon_nodate}. Formel \ref{lambda-kosten-formel} zeigt die Berechnung der Gesamtkosten für eine Lambda-Funktion.
 
 \begin{equation}
 \begin{split}
-Kosten = Aufrufe * \left(\frac{MedianMs}{1000ms} * \frac{FunktionsMb}{1024Mb} * 0,0000166667\$ + \frac{0,20\$ + 3,70\$}{1.000.000}\right)
+Kosten = Aufrufe * \left(\frac{LaufzeitMs}{1000ms} * \frac{FunktionsMb}{1024Mb} * 0,0000166667\$ + \frac{0,20\$ + 3,70\$}{1.000.000}\right)
 \end{split}
 \label{lambda-kosten-formel}
 \end{equation}
@@ -253,7 +269,7 @@ Da bei Lambda im  Gegensatz zu ECS/Fargate nur die tatsächlich aktive Zeit der 
 
 \begin{equation}
 \label{lambda-aufrufe-formel}
-Aufrufe = \frac{Kosten}{\frac{MedianMs}{1000ms} * \frac{FunktionsMb}{1024Mb} * 0,0000166667\$ + \frac{0,20\$ + 3,70\$}{1.000.000}}
+Aufrufe = \frac{Kosten}{\frac{LaufzeitMs}{1000ms} * \frac{FunktionsMb}{1024Mb} * 0,0000166667\$ + \frac{0,20\$ + 3,70\$}{1.000.000}}
 \end{equation}
 
 Abbildung \ref{fig:lambda-max-invocations} zeigt das Ergebnis der Berechnungen. Die Werte der 128MB und 256MB Funktionen stimmen überein, da der Preis für die Fargate Konfiguration identisch ist.
@@ -264,4 +280,4 @@ Abbildung \ref{fig:lambda-max-invocations} zeigt das Ergebnis der Berechnungen. 
     \label{fig:lambda-max-invocations}
 \end{figure}
 
-Der jeweils linke Wert in den Tabellenzellen gibt dabei die maximale Anzahl der Aufrufe an, wenn jeder Funktionsaufruf bei 100ms liegt. Der rechte Wert ist der für eine Funktions-Dauer von 1ms und ist damit der maximal mögliche Wert, da Lambda immer mindestens eine Millisekunde abrechnet.
+Der jeweils linke Wert in den Tabellenzellen gibt dabei die maximale Anzahl der Aufrufe an, wenn jeder Funktionsaufruf bei 100ms liegt. Der rechte Wert ist der für eine Funktions-Dauer von 1ms und ist damit der maximal mögliche Wert, da Lambda immer mindestens eine Millisekunde abrechnet\cite{noauthor_lambda_nodate}.
