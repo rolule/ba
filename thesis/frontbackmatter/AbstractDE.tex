@@ -4,11 +4,8 @@
 \begin{otherlanguage}{ngerman}
 	\pdfbookmark[1]{Zusammenfassung}{Zusammenfassung}
 	\chapter*{Zusammenfassung}
-	Kurze Zusammenfassung des Inhaltes in deutscher Sprache. Ungefähr eine Seite\dots
-	
-	
+In dieser wissenschaftlichen Arbeit wird die Performance von Serverless- und containerisierten Systemen anhand eines beispielhaften REST-Backends praktisch evaluiert und verglichen. Dazu wird zunächst eine klassische Notiz-Applikation entwickelt, die anschließend sowohl auf AWS Lambda als auch auf AWS Elastic Container Service mit dem Starttyp Fargate deployed wird. Im Anschluss folgt die Konzeption einer Test-Architektur, mit der die Performance der beiden Services untersucht und verglichen werden kann. Daraufhin werden die in der Konzeption erstellten Tests praktisch durchgeführt. Dabei werden jeweils ähnliche Konfigurationen bezüglich Arbeitsspeicher und CPU-Größe der Systeme in Relation gesetzt. Schlussendlich sollen die Kosten für den Betrieb der beiden Services gegenübergestellt werden.
 
-                        GANZ zum Schluss schreiben !
-
+Bei der Auswertung der Tests zeigt sich, dass die Container-Anwendung der Lambda-Variante in Hinblick auf die gemessenen Antwortzeiten um einige Millisekunden überlegen ist und eine geringere Varianz aufweist. Bei den Lambda-Funktionen kommt es in den Experimenten abhängig vom getesteten Anwendungsfall, der Schnelle des Last-Anstiegs und der ausgewählten Konfigurationsgröße zu geringen oder größeren Abweichungen in den Antwortzeiten. Es wird daher geschlussfolgert, dass sich Container besser für besonders zeitkritische Anwendungen mit hohen Anforderungen an konsistente Response-Times eignen, Serverless am Beispiel von Lambda aber durch ein solides automatisches Skalierungsverhalten überzeugt. Allgemein fällt die Differenz zwischen den Systemen jedoch gering aus. In der Untersuchung der Kosten zeigt sich, dass die Nutzung von Container preislich erst bei einer hohen Systemauslastung rentabel ist und daher der Betrieb von Serverless-Funktionen vor allem bei wenigen Anwendungsnutzern zu empfehlen ist. 
 
 \end{otherlanguage}

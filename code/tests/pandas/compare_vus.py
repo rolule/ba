@@ -79,7 +79,7 @@ merge = merge.set_index("time")
 print(merge.describe())
 
 # plot merged table
-ax = merge.plot(kind="line")
+ax = merge.plot(kind="line", grid=True)
 for i, l in enumerate(ax.lines):
     plt.setp(l, linewidth=0.5)
 plt.xlabel("Zeit (s)")
